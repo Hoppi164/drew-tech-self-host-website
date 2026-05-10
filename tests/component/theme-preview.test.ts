@@ -96,7 +96,20 @@ const snapshot: SiteSnapshot = {
 			sourcePath: 'content/collections/blog-posts.json'
 		}
 	],
-	entries: []
+	entries: [
+		{
+			title: 'Spring Launch',
+			slug: 'spring-launch',
+			excerpt: 'Preview entry copy',
+			featuredImage: '',
+			body: 'Entry body',
+			html: '<p>Entry body</p>',
+			kind: 'article',
+			tags: [],
+			collectionSlug: 'blog-posts',
+			sourcePath: 'content/entries/blog-posts/spring-launch.md'
+		}
+	]
 };
 
 async function renderUnlockedWorkspace(initialSnapshot: SiteSnapshot) {
@@ -191,5 +204,24 @@ describe('Admin theme preview', () => {
 		await screen.findByLabelText('Page Theme');
 		expect(screen.queryByLabelText('Global Theme')).toBeNull();
 		expect(screen.getByRole('button', { name: 'About' }).className).toContain('active');
+	});
+
+	it('navigates to an entry within the admin preview instead of leaving the admin page', async () => {
+		const { container } = await renderUnlockedWorkspace(snapshot);
+
+		const cmsNav = screen.getByRole('navigation', { name: 'CMS sections' });
+		await fireEvent.click(within(cmsNav).getByText('Journal'));
+		await screen.findByText('Collection Editor');
+
+		const previewFrame = container.querySelector('.preview-frame');
+		expect(previewFrame).toBeTruthy();
+		const previewEntryLink = within(previewFrame as HTMLElement).getByRole('link', {
+			name: 'Spring Launch'
+		});
+
+		await fireEvent.click(previewEntryLink);
+
+		await screen.findByText('Article Entry');
+		expect(screen.getByRole('button', { name: 'Spring Launch' }).className).toContain('active');
 	});
 });

@@ -28,6 +28,7 @@
 	};
 
 	let { snapshot, type, slug, collectionSlug, onNavigate }: Props = $props();
+	let previewRoot = $state<HTMLDivElement | null>(null);
 
 	const previewPage = $derived(type === 'page' ? getPage(snapshot, slug) : undefined);
 	const previewCollection = $derived(
@@ -63,10 +64,42 @@
 			onNavigate(selection);
 		}
 	}
+
+	function handlePreviewClick(event: MouseEvent) {
+		if (!onNavigate) return;
+
+		const target = event.target;
+		if (!(target instanceof Element)) return;
+
+		const link = target.closest('a');
+		if (!(link instanceof HTMLAnchorElement)) return;
+		if (link.target === '_blank' || link.hasAttribute('download')) return;
+
+		const href = link.getAttribute('href');
+		if (!href || /^(mailto:|tel:|#)/.test(href)) return;
+
+		const url = new URL(link.href, window.location.href);
+		if (url.origin !== window.location.origin) return;
+
+		const selection = resolvePreviewSelectionForPath(snapshot, `${url.pathname}${url.search}`);
+		if (!selection) return;
+
+		event.preventDefault();
+		onNavigate(selection);
+	}
+
+	$effect(() => {
+		if (!previewRoot || !onNavigate) return;
+
+		previewRoot.addEventListener('click', handlePreviewClick);
+		return () => {
+			previewRoot?.removeEventListener('click', handlePreviewClick);
+		};
+	});
 </script>
 
 {#key transitionKey}
-	<div class="preview-transition" in:fade={{ duration: 260, easing: cubicOut }}>
+	<div bind:this={previewRoot} class="preview-transition" in:fade={{ duration: 260, easing: cubicOut }}>
 		<SiteShell
 			theme={previewTheme}
 			siteName={snapshot.site.business.name}

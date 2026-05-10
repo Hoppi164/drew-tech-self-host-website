@@ -1,3 +1,4 @@
+import { base } from '$app/paths';
 import type {
 	EditableEntityType,
 	EntryKind,
@@ -78,7 +79,13 @@ export function resolvePreviewSelectionForPath(
 	}
 
 	const normalizedPath = pathname.trim() === '' ? '/' : pathname;
-	const path = normalizedPath.startsWith('/') ? normalizedPath : `/${normalizedPath}`;
+	const pathWithBase = normalizedPath.startsWith('/') ? normalizedPath : `/${normalizedPath}`;
+	const path =
+		base && pathWithBase.startsWith(`${base}/`)
+			? pathWithBase.slice(base.length) || '/'
+			: pathWithBase === base
+				? '/'
+				: pathWithBase;
 	const [first = '', second] = path.replace(/^\/+|\/+$/g, '').split('/');
 
 	if (path === '/' || first === '') {
