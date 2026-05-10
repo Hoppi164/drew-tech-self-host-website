@@ -1,0 +1,21 @@
+.theme-scope[data-theme='garden-journal'] {
+	--site-background: #eef3e8;
+	--site-surface: #f9fbf6;
+	--site-text: #23301f;
+	--site-muted: #597051;
+	--site-accent: #47663e;
+	--site-border: #bfd0b4;
+	--site-radius: 20px;
+	--site-heading-font: Baskerville, Georgia, serif;
+	--site-body-font: 'Gill Sans', 'Trebuchet MS', sans-serif;
+	--site-shadow: 0 20px 44px rgba(51, 76, 45, 0.08);
+	--site-hero-glow: radial-gradient(circle at top left, rgba(71, 102, 62, 0.14), transparent 34%);
+}
+
+.theme-scope[data-theme='garden-journal'] .hero .copy,
+.theme-scope[data-theme='garden-journal'] .card,
+.theme-scope[data-theme='garden-journal'] .article,
+.theme-scope[data-theme='garden-journal'] .panel,
+.theme-scope[data-theme='garden-journal'] figure {
+	box-shadow: var(--site-shadow);
+}

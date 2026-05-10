@@ -1,0 +1,1 @@
+import{t as e}from"./chunk-BvrOYcoh.js";var t=e((()=>{})),n,r=e((()=>{n=[`artist-loft`,`garden-journal`,`artisan-bloom`,`coastal-clarity`,`workshop-grid`,`midnight-press`]})),i,a=e((()=>{r(),i={control:`select`,options:[...n]}}));export{i as n,t as r,a as t};

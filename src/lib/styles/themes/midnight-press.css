@@ -1,0 +1,19 @@
+.theme-scope[data-theme='midnight-press'] {
+	--site-background: #0f1720;
+	--site-surface: #15202b;
+	--site-text: #edf2f7;
+	--site-muted: #a9b6c4;
+	--site-accent: #d76f54;
+	--site-border: #2b3a47;
+	--site-radius: 24px;
+	--site-heading-font: Garamond, 'Times New Roman', serif;
+	--site-body-font: 'Helvetica Neue', Arial, sans-serif;
+	--site-shadow: 0 18px 44px rgba(0, 0, 0, 0.34);
+	--site-hero-glow: radial-gradient(circle at top left, rgba(215, 111, 84, 0.18), transparent 34%);
+}
+
+.theme-scope[data-theme='midnight-press'] .brand,
+.theme-scope[data-theme='midnight-press'] nav a,
+.theme-scope[data-theme='midnight-press'] .socials a {
+	color: var(--site-text);
+}

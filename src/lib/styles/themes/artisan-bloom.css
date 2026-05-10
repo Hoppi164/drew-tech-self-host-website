@@ -1,0 +1,17 @@
+.theme-scope[data-theme='artisan-bloom'] {
+	--site-background: #f9f1eb;
+	--site-surface: #fffaf7;
+	--site-text: #3d2c2a;
+	--site-muted: #7a5a53;
+	--site-accent: #b14f38;
+	--site-border: #e4c3b5;
+	--site-radius: 28px;
+	--site-heading-font: Didot, 'Times New Roman', serif;
+	--site-body-font: 'Helvetica Neue', Arial, sans-serif;
+	--site-shadow: 0 22px 42px rgba(177, 79, 56, 0.1);
+	--site-hero-glow: radial-gradient(circle at top left, rgba(177, 79, 56, 0.18), transparent 36%);
+}
+
+.theme-scope[data-theme='artisan-bloom'] .cta {
+	letter-spacing: 0.03em;
+}

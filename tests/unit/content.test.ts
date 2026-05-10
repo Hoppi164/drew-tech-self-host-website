@@ -1,0 +1,102 @@
+import { describe, expect, it } from 'vitest';
+import { insertDraftEntity, resolveThemeKey, sortByDateDescending, updateRenderedBody } from '$lib/content/site';
+import type { SiteSnapshot } from '$lib/types/content';
+
+const snapshot: SiteSnapshot = {
+	site: {
+		business: {
+			name: 'Demo',
+			tagline: 'Tagline',
+			description: 'Desc',
+			email: 'demo@example.com',
+			phone: '123',
+			location: 'Brisbane',
+			logoText: 'Demo'
+		},
+		repo: {
+			owner: 'demo',
+			name: 'repo',
+			branch: 'main',
+			basePath: ''
+		},
+		socialLinks: [],
+		navigation: [],
+		homepage: {
+			featuredPageSlugs: [],
+			featuredCollectionSlugs: [],
+			featuredGallerySlug: '',
+			featuredPostSlugs: [],
+			featuredEventSlugs: [],
+			heroCtaLabel: 'Contact',
+			heroCtaPath: '/contact'
+		},
+		contact: {
+			title: 'Talk',
+			intro: 'Intro',
+			email: 'demo@example.com',
+			phone: '123',
+			address: 'Here',
+			ctaLabel: 'Email',
+			ctaUrl: 'mailto:demo@example.com'
+		},
+		theme: {
+			global: 'artist-loft'
+		},
+		enabledSections: {
+			posts: true,
+			events: true,
+			collections: true,
+			galleries: true
+		},
+		sourcePath: 'content/site.json'
+	},
+	pages: [],
+	posts: [],
+	events: [],
+	galleries: [],
+	collections: []
+};
+
+describe('content helpers', () => {
+	it('sorts dated entries descending', () => {
+		const items = sortByDateDescending([
+			{ date: '2026-01-01', name: 'a' },
+			{ date: '2026-03-01', name: 'b' }
+		]);
+
+		expect(items[0].name).toBe('b');
+	});
+
+	it('falls back to global theme', () => {
+		expect(resolveThemeKey(snapshot, undefined)).toBe('artist-loft');
+	});
+
+	it('renders markdown when a draft body changes', () => {
+		const page = updateRenderedBody({
+			title: 'Page',
+			slug: 'page',
+			excerpt: 'Excerpt',
+			featuredImage: '',
+			body: 'Hello **world**',
+			html: '',
+			sourcePath: 'content/pages/page.md'
+		});
+
+		expect(page.html).toContain('<strong>world</strong>');
+	});
+
+	it('upserts a page into the snapshot', () => {
+		const next = insertDraftEntity(snapshot, 'page', {
+			title: 'Page',
+			slug: 'page',
+			excerpt: 'Excerpt',
+			featuredImage: '',
+			body: 'Body',
+			html: '<p>Body</p>',
+			sourcePath: 'content/pages/page.md'
+		});
+
+		expect(next.pages).toHaveLength(1);
+		expect(next.pages[0].slug).toBe('page');
+	});
+});
