@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { base } from '$app/paths';
+	import { untrack } from 'svelte';
 	import { get } from 'svelte/store';
 	import SnapshotPreview from '$lib/components/preview/SnapshotPreview.svelte';
 	import { insertDraftEntity, updateRenderedBody } from '$lib/content/site';
@@ -32,7 +33,7 @@
 	}
 
 	let { initialSnapshot }: Props = $props();
-	let draftSnapshot = $state<SiteSnapshot>(cloneSnapshot(initialSnapshot));
+	let draftSnapshot = $state<SiteSnapshot>(untrack(() => cloneSnapshot(initialSnapshot)));
 	let token = $state('');
 	let status = $state('');
 	let error = $state('');
