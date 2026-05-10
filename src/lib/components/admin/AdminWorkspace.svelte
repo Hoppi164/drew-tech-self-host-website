@@ -327,7 +327,6 @@
 					type="button"
 				>
 					<span>Site Settings</span>
-					<small>global</small>
 				</button>
 
 				{#each navGroups as group}
@@ -812,7 +811,7 @@
 	}
 
 	button.nav-new span:first-child {
-		font-size: 0.98rem;
+		font-size: 0.84rem;
 		font-weight: 600;
 		line-height: 1;
 	}
