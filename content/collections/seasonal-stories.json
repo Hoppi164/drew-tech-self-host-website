@@ -2,7 +2,6 @@
   "title": "Seasonal Stories",
   "slug": "seasonal-stories",
   "description": "Collections can group pages, galleries, posts, or events around a campaign or business line.",
-  "theme": "garden-journal",
   "pageSlugs": [
     "services"
   ],

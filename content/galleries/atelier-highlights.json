@@ -3,7 +3,6 @@
   "slug": "atelier-highlights",
   "description": "A small gallery structure with image metadata suitable for artists or service businesses.",
   "coverImage": "/uploads/artist-studio.svg",
-  "theme": "artist-loft",
   "items": [
     {
       "src": "/uploads/artist-studio.svg",
