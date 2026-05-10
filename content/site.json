@@ -1,81 +1,90 @@
 {
-	"business": {
-		"name": "Northwind Studio",
-		"tagline": "Handmade visuals, grounded storytelling, and memorable websites for local businesses.",
-		"description": "A demo small-business template showing how one codebase can suit artists, makers, and service businesses.",
-		"email": "hello@example.com",
-		"phone": "+61 7 5555 0110",
-		"location": "Brisbane, Australia",
-		"logoText": "Northwind"
-	},
-	"repo": {
-		"owner": "Hoppi164",
-		"name": "drew-tech-self-host-website",
-		"branch": "main",
-		"basePath": "/drew-tech-self-host-website"
-
-	},
-	"socialLinks": [
-		{
-			"label": "Instagram",
-			"url": "https://instagram.com/example"
-		},
-		{
-			"label": "Pinterest",
-			"url": "https://pinterest.com/example"
-		}
-	],
-	"navigation": [
-		{
-			"label": "Home",
-			"path": "/"
-		},
-		{
-			"label": "About",
-			"path": "/about"
-		},
-		{
-			"label": "Collections",
-			"path": "/collections"
-		},
-		{
-			"label": "Journal",
-			"path": "/posts"
-		},
-		{
-			"label": "Events",
-			"path": "/events"
-		},
-		{
-			"label": "Contact",
-			"path": "/contact"
-		}
-	],
-	"homepage": {
-		"featuredPageSlugs": ["about", "services"],
-		"featuredCollectionSlugs": ["seasonal-stories"],
-		"featuredGallerySlug": "atelier-highlights",
-		"featuredPostSlugs": ["spring-launch", "artist-open-day"],
-		"featuredEventSlugs": ["winter-studio-night"],
-		"heroCtaLabel": "Book a consultation",
-		"heroCtaPath": "/contact"
-	},
-	"contact": {
-		"title": "Start with a simple conversation",
-		"intro": "Use email, phone, or a static form endpoint once you are ready to accept enquiries.",
-		"email": "hello@example.com",
-		"phone": "+61 7 5555 0110",
-		"address": "West End, Brisbane",
-		"ctaLabel": "Email now",
-		"ctaUrl": "mailto:hello@example.com"
-	},
-	"theme": {
-		"global": "artist-loft"
-	},
-	"enabledSections": {
-		"posts": true,
-		"events": true,
-		"collections": true,
-		"galleries": true
-	}
+  "business": {
+    "name": "Northwind Studio",
+    "tagline": "Handmade visuals, grounded storytelling, and memorable websites for local businesses.",
+    "description": "A demo small-business template showing how one codebase can suit artists, makers, and service businesses.",
+    "email": "hello@example.com",
+    "phone": "+61 7 5555 0110",
+    "location": "Brisbane, Australia",
+    "logoText": "Northwind"
+  },
+  "repo": {
+    "owner": "Hoppi164",
+    "name": "drew-tech-self-host-website",
+    "branch": "main",
+    "basePath": "/drew-tech-self-host-website"
+  },
+  "socialLinks": [
+    {
+      "label": "Instagram",
+      "url": "https://instagram.com/example"
+    },
+    {
+      "label": "Pinterest",
+      "url": "https://pinterest.com/example"
+    }
+  ],
+  "navigation": [
+    {
+      "label": "Home",
+      "path": "/"
+    },
+    {
+      "label": "About",
+      "path": "/about"
+    },
+    {
+      "label": "Collections",
+      "path": "/collections"
+    },
+    {
+      "label": "Journal",
+      "path": "/posts"
+    },
+    {
+      "label": "Events",
+      "path": "/events"
+    },
+    {
+      "label": "Contact",
+      "path": "/contact"
+    }
+  ],
+  "homepage": {
+    "featuredPageSlugs": [
+      "about",
+      "services"
+    ],
+    "featuredCollectionSlugs": [
+      "seasonal-stories"
+    ],
+    "featuredGallerySlug": "atelier-highlights",
+    "featuredPostSlugs": [
+      "spring-launch",
+      "artist-open-day"
+    ],
+    "featuredEventSlugs": [
+      "winter-studio-night"
+    ],
+    "heroCtaLabel": "Book a consultation",
+    "heroCtaPath": "/contact"
+  },
+  "contact": {
+    "title": "Start with a simple conversation",
+    "intro": "Use email, phone, or a static form endpoint once you are ready to accept enquiries.",
+    "email": "hello@example.com",
+    "phone": "+61 7 5555 0110",
+    "address": "West End, Brisbane",
+    "ctaLabel": "Email now",
+    "ctaUrl": "mailto:hello@example.com"
+  },
+  "theme": {
+    "global": "artist-loft"
+  },
+  "enabledSections": {
+    "posts": true,
+    "events": true,
+    "collections": true,
+    "galleries": true
+  }
 }
