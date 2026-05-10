@@ -8,7 +8,7 @@ Fork this repo to launch a low-cost small-business website with a built-in brows
 - `GitHub Pages` hosting
 - `GitHub Actions` rebuilds
 - browser CMS with live preview
-- file-based pages, posts, events, galleries, and collections
+- file-based pages, collections, and entries
 - six CSS theme packs
 - `Vitest` and `Storybook`
 
@@ -28,7 +28,11 @@ Fork this repo to launch a low-cost small-business website with a built-in brows
    - `repo.owner`
    - `repo.name`
    - `repo.basePath`
-6. Open `/admin` on your deployed site, paste the token, edit content, preview it, and publish.
+6. Open `/admin` on your deployed site, paste the token, then use the CMS to:
+   - choose which page is the home page
+   - edit the top navigation links
+   - create pages, collections, and entries
+   - preview changes and publish
 
 ## Deployment Path
 
@@ -89,12 +93,16 @@ BASE_PATH= npm run build
 
 ## Content
 
-- `content/site.json`: brand, navigation, homepage, contact, theme, repo config
-- `content/pages/*.md`: standard pages
-- `content/posts/*.md`: blog or news posts
-- `content/events/*.md`: event entries
-- `content/galleries/*.json`: image galleries
-- `content/collections/*.json`: grouped content sets
+- `content/site.json`: brand, contact, navigation, selected home page, theme, repo config
+- `content/pages/*.md`: standalone pages such as `about`, `contact`, or your selected home page
+- `content/collections/*.json`: collection settings such as route base, layout, and entry kind
+- `content/entries/<collection-slug>/*`: entries that belong to each collection
+
+Default seeded collections include:
+
+- `blog-posts`
+- `image-galleries`
+- `studio-events`
 
 ## Token Safety
 

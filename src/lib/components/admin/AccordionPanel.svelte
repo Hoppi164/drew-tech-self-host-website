@@ -1,32 +1,80 @@
 <script lang="ts">
 	type Props = {
-		summary: string;
+		summary?: string;
+		open?: boolean;
+		className?: string;
+		onSummaryClick?: ((event: MouseEvent) => void) | undefined;
+		summaryContent?: import('svelte').Snippet;
+		actions?: import('svelte').Snippet;
 		children: import('svelte').Snippet;
 	};
 
-	let { summary, children }: Props = $props();
+	let {
+		summary,
+		open = false,
+		className = '',
+		onSummaryClick,
+		summaryContent,
+		actions,
+		children
+	}: Props = $props();
+
+	let detailsElement = $state<HTMLDetailsElement | null>(null);
+
+	$effect(() => {
+		if (detailsElement) {
+			detailsElement.open = open;
+		}
+	});
+
+	function handleSummaryClick(event: MouseEvent) {
+		if (!onSummaryClick) return;
+		event.preventDefault();
+		onSummaryClick(event);
+	}
 </script>
 
-<details class="accordion">
-	<summary>
-		<span>{summary}</span>
-		<span aria-hidden="true" class="icon">
-			<span class="bar bar-static"></span>
-			<span class="bar bar-rotating"></span>
-		</span>
-	</summary>
-	<div class="content-wrap">
-		<div class="content">
-			{@render children()}
+<div class={`accordion-shell ${className}`.trim()}>
+	<details bind:this={detailsElement} class="accordion" {open}>
+		<summary onclick={handleSummaryClick}>
+			<span class="summary-copy">
+				{#if summaryContent}
+					{@render summaryContent()}
+				{:else}
+					{summary}
+				{/if}
+			</span>
+			<span aria-hidden="true" class="icon">
+				<span class="bar bar-static"></span>
+				<span class="bar bar-rotating"></span>
+			</span>
+		</summary>
+		<div class="content-wrap">
+			<div class="content">
+				{@render children()}
+			</div>
 		</div>
-	</div>
-</details>
+	</details>
+	{#if actions}
+		<div class="actions">
+			{@render actions()}
+		</div>
+	{/if}
+</div>
 
 <style>
+	.accordion-shell {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) auto;
+		align-items: start;
+		gap: 0.75rem;
+	}
+
 	.accordion {
 		border-top: 1px solid #d9deea;
 		padding-top: 1rem;
 		interpolate-size: allow-keywords;
+		min-width: 0;
 	}
 
 	.accordion::details-content {
@@ -51,6 +99,10 @@
 		cursor: pointer;
 		font-weight: 700;
 		color: #243244;
+	}
+
+	.summary-copy {
+		min-width: 0;
 	}
 
 	summary::-webkit-details-marker {
@@ -101,6 +153,10 @@
 
 	.content-wrap {
 		overflow: hidden;
+	}
+
+	.actions {
+		padding-top: 0.1rem;
 	}
 
 	.content {

@@ -40,18 +40,16 @@ const snapshot: SiteSnapshot = {
 		],
 		navigation: [
 			{
+				label: 'About',
+				path: '/about'
+			},
+			{
 				label: 'Home',
 				path: '/'
 			}
 		],
 		homepage: {
-			featuredPageSlugs: ['about'],
-			featuredCollectionSlugs: [],
-			featuredGallerySlug: '',
-			featuredPostSlugs: [],
-			featuredEventSlugs: [],
-			heroCtaLabel: 'Book now',
-			heroCtaPath: '/contact'
+			homePageSlug: 'about'
 		},
 		contact: {
 			title: 'Talk',
@@ -66,10 +64,7 @@ const snapshot: SiteSnapshot = {
 			global: 'artist-loft'
 		},
 		enabledSections: {
-			posts: true,
-			events: true,
-			collections: true,
-			galleries: true
+			collections: true
 		},
 		sourcePath: 'content/site.json'
 	},
@@ -84,10 +79,24 @@ const snapshot: SiteSnapshot = {
 			sourcePath: 'content/pages/about.md'
 		}
 	],
-	posts: [],
-	events: [],
-	galleries: [],
-	collections: []
+	collections: [
+		{
+			title: 'Journal',
+			slug: 'blog-posts',
+			description: 'Articles',
+			kind: 'article',
+			routeBase: 'journal',
+			layout: 'cards',
+			entryOrder: 'manual',
+			showDate: false,
+			showExcerpt: true,
+			showFeaturedImage: true,
+			showImageGrid: false,
+			showBodyPreview: true,
+			sourcePath: 'content/collections/blog-posts.json'
+		}
+	],
+	entries: []
 };
 
 async function renderUnlockedWorkspace(initialSnapshot: SiteSnapshot) {
@@ -99,7 +108,7 @@ async function renderUnlockedWorkspace(initialSnapshot: SiteSnapshot) {
 		target: { value: 'github_pat_test_token' }
 	});
 	await fireEvent.click(screen.getByRole('button', { name: 'Log In to CMS' }));
-	await screen.findByRole('heading', { name: 'Site Settings' });
+	await screen.findByLabelText('Global Theme');
 
 	return rendered;
 }
@@ -129,19 +138,23 @@ describe('Admin theme preview', () => {
 		const { container } = await renderUnlockedWorkspace(snapshot);
 
 		const shell = getPreviewShell(container);
-		const heroHeading = container.querySelector('.preview-frame .hero h1');
+		const articleHeading = container.querySelector('.preview-frame .article h1');
 		const themeSelect = screen.getByLabelText('Global Theme');
 
-		expect(heroHeading).toBeTruthy();
+		expect(articleHeading).toBeTruthy();
 		expect(themeSelect).toBeTruthy();
 		expectPreviewTheme(shell, 'artist-loft');
-		expect(getComputedStyle(heroHeading as HTMLElement).fontFamily).toBe('var(--site-heading-font)');
+		expect(getComputedStyle(articleHeading as HTMLElement).fontFamily).toBe(
+			'var(--site-heading-font)'
+		);
 
 		await fireEvent.change(themeSelect, { target: { value: 'midnight-press' } });
 
 		await waitFor(() => {
 			expectPreviewTheme(shell, 'midnight-press');
-			expect(getComputedStyle(heroHeading as HTMLElement).fontFamily).toBe('var(--site-heading-font)');
+			expect(getComputedStyle(articleHeading as HTMLElement).fontFamily).toBe(
+				'var(--site-heading-font)'
+			);
 		});
 	});
 
@@ -149,7 +162,7 @@ describe('Admin theme preview', () => {
 		const { container } = await renderUnlockedWorkspace(snapshot);
 		await fireEvent.click(screen.getByRole('button', { name: 'About' }));
 
-		await screen.findByRole('heading', { name: 'about' });
+		await screen.findByLabelText('Page Theme');
 
 		const shell = getPreviewShell(container);
 		const pageThemeSelect = screen.getByLabelText('Page Theme');
@@ -162,5 +175,20 @@ describe('Admin theme preview', () => {
 		await waitFor(() => {
 			expectPreviewTheme(shell, 'coastal-clarity');
 		});
+	});
+
+	it('navigates within the admin preview instead of leaving the admin page', async () => {
+		const { container } = await renderUnlockedWorkspace(snapshot);
+
+		expect(screen.getByLabelText('Global Theme')).toBeTruthy();
+
+		const previewAboutLink = container.querySelector('.preview-frame nav a[href="/about"]');
+		expect(previewAboutLink).toBeTruthy();
+
+		await fireEvent.click(previewAboutLink as HTMLAnchorElement);
+
+		await screen.findByLabelText('Page Theme');
+		expect(screen.queryByLabelText('Global Theme')).toBeNull();
+		expect(screen.getByRole('button', { name: 'About' }).className).toContain('active');
 	});
 });

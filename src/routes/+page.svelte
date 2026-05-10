@@ -1,13 +1,13 @@
 <script lang="ts">
-	import HomePage from '$lib/components/site/HomePage.svelte';
+	import ContactPanel from '$lib/components/site/ContactPanel.svelte';
+	import RichTextPage from '$lib/components/site/RichTextPage.svelte';
 	import SiteShell from '$lib/components/site/SiteShell.svelte';
-	import { homepageData } from '$lib/content/site';
-	import { themes } from '$lib/types/theme';
+	import { getHomePage } from '$lib/content/site';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
-	const home = $derived(homepageData(data.snapshot));
 	const theme = $derived(data.snapshot.site.theme.global);
+	const homePage = $derived(getHomePage(data.snapshot));
 </script>
 
 <SiteShell
@@ -19,19 +19,10 @@
 	activePath="/"
 >
 	{#snippet children()}
-		<HomePage
-			title={data.snapshot.site.business.name}
-			tagline={data.snapshot.site.business.tagline}
-			description={data.snapshot.site.business.description}
-			heroImage={home.gallery?.coverImage ?? '/uploads/artist-studio.svg'}
-			heroCtaLabel={data.snapshot.site.homepage.heroCtaLabel}
-			heroCtaPath={data.snapshot.site.homepage.heroCtaPath}
-			pages={home.pages}
-			collections={home.collections}
-			posts={home.posts}
-			events={home.events}
-			gallery={home.gallery}
-			heroAlign={themes[theme].heroAlign}
-		/>
+		{#if homePage?.slug === 'contact'}
+			<ContactPanel {...data.snapshot.site.contact} />
+		{:else if homePage}
+			<RichTextPage title={homePage.title} excerpt={homePage.excerpt} html={homePage.html} />
+		{/if}
 	{/snippet}
 </SiteShell>

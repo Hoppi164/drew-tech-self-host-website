@@ -4,6 +4,7 @@ import type { EditableEntityType, SiteSnapshot } from '$lib/types/content';
 export type AdminSelection = {
 	type: EditableEntityType | 'site';
 	slug: string;
+	collectionSlug?: string;
 };
 
 export type PendingUpload = {

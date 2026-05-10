@@ -7,7 +7,14 @@
 	let { data }: PageProps = $props();
 
 	const snapshot = $derived(get(adminSnapshot) ?? data.initialSnapshot);
-	const selection = $derived(get(adminSelection) ?? { type: data.type, slug: data.slug });
+	const selection = $derived(
+		get(adminSelection) ?? { type: data.type, slug: data.slug, collectionSlug: data.collectionSlug }
+	);
 </script>
 
-<SnapshotPreview snapshot={snapshot} type={selection.type} slug={selection.slug} />
+<SnapshotPreview
+	snapshot={snapshot}
+	type={selection.type}
+	slug={selection.slug}
+	collectionSlug={selection.collectionSlug}
+/>

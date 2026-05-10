@@ -1,0 +1,14 @@
+{
+  "title": "Galleries",
+  "slug": "image-galleries",
+  "description": "Gallery collections group image-rich documents that can still carry copy, captions, and theme overrides.",
+  "kind": "gallery",
+  "routeBase": "galleries",
+  "layout": "gallery",
+  "entryOrder": "manual",
+  "showDate": false,
+  "showExcerpt": true,
+  "showFeaturedImage": true,
+  "showImageGrid": true,
+  "showBodyPreview": true
+}

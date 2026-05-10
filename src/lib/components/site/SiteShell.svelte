@@ -11,21 +11,34 @@
 		navigation: NavigationItem[];
 		socialLinks: SocialLink[];
 		activePath?: string;
+		onNavigate?: ((path: string) => void) | undefined;
 		children: import('svelte').Snippet;
 	};
 
-	let { theme, siteName, tagline, navigation, socialLinks, activePath = '', children }: Props = $props();
+	let { theme, siteName, tagline, navigation, socialLinks, activePath = '', onNavigate, children }: Props = $props();
+
+	function handleNavigate(event: MouseEvent, path: string) {
+		if (!onNavigate) return;
+		event.preventDefault();
+		onNavigate(path);
+	}
 </script>
 
 <div class="shell theme-scope" data-theme={theme}>
 	<header class="topbar">
 		<div>
-			<a class="brand" href={withBase('/')}>{siteName}</a>
+			<a class="brand" href={withBase('/')} onclick={(event) => handleNavigate(event, '/')}>{siteName}</a>
 			<p>{tagline}</p>
 		</div>
 		<nav>
 			{#each navigation as item}
-				<a class:item-active={activePath === item.path} href={withBase(item.path)}>{item.label}</a>
+				<a
+					class:item-active={activePath === item.path}
+					href={withBase(item.path)}
+					onclick={(event) => handleNavigate(event, item.path)}
+				>
+					{item.label}
+				</a>
 			{/each}
 		</nav>
 	</header>

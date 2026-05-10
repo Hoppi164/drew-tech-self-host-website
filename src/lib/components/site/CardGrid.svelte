@@ -4,10 +4,15 @@
 	type Props<T> = {
 		title: string;
 		items: T[];
-		hrefPrefix: string;
+		hrefPrefix?: string;
+		hrefResolver?: (item: T) => string;
 	};
 
-	let { title, items, hrefPrefix }: Props<T> = $props();
+	let { title, items, hrefPrefix = '', hrefResolver }: Props<T> = $props();
+
+	function hrefFor(item: T) {
+		return hrefResolver ? hrefResolver(item) : `${hrefPrefix}/${item.slug}`;
+	}
 </script>
 
 {#if items.length}
@@ -21,7 +26,7 @@
 					{#if item.featuredImage || item.coverImage}
 						<img src={withBase(item.featuredImage ?? item.coverImage ?? '')} alt="" />
 					{/if}
-					<h3><a href={withBase(`${hrefPrefix}/${item.slug}`)}>{item.title}</a></h3>
+					<h3><a href={withBase(hrefFor(item))}>{item.title}</a></h3>
 					<p>{item.excerpt ?? item.description ?? ''}</p>
 				</article>
 			{/each}

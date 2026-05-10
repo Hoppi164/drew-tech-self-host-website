@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
 	draftSourcePath,
+	getHomePage,
 	insertDraftEntity,
 	normalizeSlug,
 	resolveThemeKey,
@@ -30,13 +31,7 @@ const snapshot: SiteSnapshot = {
 		socialLinks: [],
 		navigation: [],
 		homepage: {
-			featuredPageSlugs: [],
-			featuredCollectionSlugs: [],
-			featuredGallerySlug: '',
-			featuredPostSlugs: [],
-			featuredEventSlugs: [],
-			heroCtaLabel: 'Contact',
-			heroCtaPath: '/contact'
+			homePageSlug: 'about'
 		},
 		contact: {
 			title: 'Talk',
@@ -51,18 +46,39 @@ const snapshot: SiteSnapshot = {
 			global: 'artist-loft'
 		},
 		enabledSections: {
-			posts: true,
-			events: true,
-			collections: true,
-			galleries: true
+			collections: true
 		},
 		sourcePath: 'content/site.json'
 	},
-	pages: [],
-	posts: [],
-	events: [],
-	galleries: [],
-	collections: []
+	pages: [
+		{
+			title: 'About',
+			slug: 'about',
+			excerpt: 'About excerpt',
+			featuredImage: '',
+			body: 'About body',
+			html: '<p>About body</p>',
+			sourcePath: 'content/pages/about.md'
+		}
+	],
+	collections: [
+		{
+			title: 'Journal',
+			slug: 'blog-posts',
+			description: 'Desc',
+			kind: 'article',
+			routeBase: 'journal',
+			layout: 'cards',
+			entryOrder: 'manual',
+			showDate: false,
+			showExcerpt: true,
+			showFeaturedImage: true,
+			showImageGrid: false,
+			showBodyPreview: true,
+			sourcePath: 'content/collections/blog-posts.json'
+		}
+	],
+	entries: []
 };
 
 describe('content helpers', () => {
@@ -77,6 +93,10 @@ describe('content helpers', () => {
 
 	it('normalizes slugs to lowercase hyphenated text', () => {
 		expect(normalizeSlug('  Contact Us Page  ')).toBe('contact-us-page');
+	});
+
+	it('resolves the selected home page from site settings', () => {
+		expect(getHomePage(snapshot)?.slug).toBe('about');
 	});
 
 	it('falls back to global theme', () => {
@@ -112,8 +132,8 @@ describe('content helpers', () => {
 			sourcePath: 'content/pages/page.md'
 		});
 
-		expect(next.pages).toHaveLength(1);
-		expect(next.pages[0].slug).toBe('page');
+		expect(next.pages).toHaveLength(2);
+		expect(next.pages.find((page) => page.slug === 'page')?.sourcePath).toBe('content/pages/page.md');
 	});
 
 	it('replaces a draft page when its slug changes', () => {
@@ -126,35 +146,47 @@ describe('content helpers', () => {
 			html: '<p>Body</p>',
 			sourcePath: draftSourcePath('page', 'new-page')
 		});
+		const draftPage = first.pages.find((page) => page.slug === 'new-page');
 
-		const next = insertDraftEntity(first, 'page', {
-			...first.pages[0],
-			slug: 'contact',
-			sourcePath: draftSourcePath('page', 'contact')
-		}, {
-			slug: first.pages[0].slug,
-			sourcePath: first.pages[0].sourcePath
-		});
+		const next = insertDraftEntity(
+			first,
+			'page',
+			{
+				...draftPage!,
+				slug: 'contact',
+				sourcePath: draftSourcePath('page', 'contact')
+			},
+			{
+				slug: draftPage!.slug,
+				sourcePath: draftPage!.sourcePath
+			}
+		);
 
-		expect(next.pages).toHaveLength(1);
-		expect(next.pages[0].slug).toBe('contact');
-		expect(next.pages[0].sourcePath).toBe('content/pages/contact.md');
+		expect(next.pages).toHaveLength(2);
+		expect(next.pages.find((page) => page.slug === 'contact')?.sourcePath).toBe(
+			'content/pages/contact.md'
+		);
+		expect(next.pages.find((page) => page.slug === 'new-page')).toBeUndefined();
 	});
 
 	it('serializes a proxied snapshot for publishing', () => {
 		const proxiedSnapshot: SiteSnapshot = {
 			...snapshot,
 			site: new Proxy({ ...snapshot.site }, {}),
-			galleries: [
+			entries: [
 				new Proxy(
 					{
 						title: 'Gallery',
 						slug: 'gallery',
-						description: 'Gallery description',
-						coverImage: '/uploads/cover.jpg',
+						excerpt: 'Gallery description',
+						featuredImage: '/uploads/cover.jpg',
 						theme: 'artist-loft',
-						items: [],
-						sourcePath: 'content/galleries/gallery.json'
+						body: 'Gallery body',
+						html: '<p>Gallery body</p>',
+						kind: 'gallery',
+						collectionSlug: 'blog-posts',
+						images: [],
+						sourcePath: 'content/entries/blog-posts/gallery.json'
 					},
 					{}
 				)

@@ -198,16 +198,14 @@ function buildPublishCandidates(snapshot: SiteSnapshot, pendingUploads: PublishU
 	return [
 		{ path: 'content/site.json', content: serialized.site, encoding: 'utf-8' as const },
 		...serialized.pages.map((page) => ({ path: page.path, content: page.content, encoding: 'utf-8' as const })),
-		...serialized.posts.map((post) => ({ path: post.path, content: post.content, encoding: 'utf-8' as const })),
-		...serialized.events.map((event) => ({ path: event.path, content: event.content, encoding: 'utf-8' as const })),
-		...serialized.galleries.map((gallery) => ({
-			path: gallery.path,
-			content: gallery.content,
-			encoding: 'utf-8' as const
-		})),
 		...serialized.collections.map((collection) => ({
 			path: collection.path,
 			content: collection.content,
+			encoding: 'utf-8' as const
+		})),
+		...serialized.entries.map((entry) => ({
+			path: entry.path,
+			content: entry.content,
 			encoding: 'utf-8' as const
 		})),
 		...pendingUploads.map((upload) => ({

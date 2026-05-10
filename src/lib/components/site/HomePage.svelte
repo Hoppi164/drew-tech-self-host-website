@@ -1,8 +1,8 @@
 <script lang="ts">
 	import CardGrid from '$lib/components/site/CardGrid.svelte';
-	import GalleryGrid from '$lib/components/site/GalleryGrid.svelte';
 	import HeroSection from '$lib/components/site/HeroSection.svelte';
-	import type { SiteCollection, SiteEvent, SiteGallery, SitePage, SitePost } from '$lib/types/content';
+	import type { SiteCollection, SiteEntry, SitePage } from '$lib/types/content';
+	import { resolveCollectionHref } from '$lib/content/site';
 
 	type Props = {
 		title: string;
@@ -13,9 +13,7 @@
 		heroCtaPath: string;
 		pages: SitePage[];
 		collections: SiteCollection[];
-		posts: SitePost[];
-		events: SiteEvent[];
-		gallery?: SiteGallery;
+		entries: SiteEntry[];
 		heroAlign?: 'start' | 'center';
 	};
 
@@ -28,11 +26,14 @@
 		heroCtaPath,
 		pages,
 		collections,
-		posts,
-		events,
-		gallery,
+		entries,
 		heroAlign = 'start'
 	}: Props = $props();
+
+	function entryHref(entry: SiteEntry) {
+		const collection = collections.find((item) => item.slug === entry.collectionSlug);
+		return collection ? `/${collection.routeBase}/${entry.slug}` : '/';
+	}
 </script>
 
 <HeroSection
@@ -45,9 +46,5 @@
 />
 
 <CardGrid title="Featured Pages" items={pages} hrefPrefix="" />
-<CardGrid title="Collections" items={collections} hrefPrefix="/collections" />
-{#if gallery}
-	<GalleryGrid {gallery} />
-{/if}
-<CardGrid title="Journal" items={posts} hrefPrefix="/posts" />
-<CardGrid title="Events" items={events} hrefPrefix="/events" />
+<CardGrid title="Collections" items={collections} hrefResolver={resolveCollectionHref} />
+<CardGrid title="Featured Entries" items={entries} hrefResolver={entryHref} />

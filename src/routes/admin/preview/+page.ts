@@ -9,6 +9,7 @@ export const load: PageLoad = async ({ url, fetch }) => {
 	return {
 		initialSnapshot: await response.json(),
 		type: url.searchParams.get('type') ?? 'site',
-		slug: url.searchParams.get('slug') ?? 'site'
+		slug: url.searchParams.get('slug') ?? 'site',
+		collectionSlug: url.searchParams.get('collectionSlug') ?? undefined
 	};
 };

@@ -1,98 +1,114 @@
 <script lang="ts">
-	import { getCollection, getEvent, getGallery, getPage, getPost, homepageData, resolveThemeKey } from '$lib/content/site';
+	import { cubicOut } from 'svelte/easing';
+	import { fade } from 'svelte/transition';
+	import CollectionPage from '$lib/components/site/CollectionPage.svelte';
 	import ContactPanel from '$lib/components/site/ContactPanel.svelte';
-	import GalleryGrid from '$lib/components/site/GalleryGrid.svelte';
-	import HomePage from '$lib/components/site/HomePage.svelte';
+	import EntryPage from '$lib/components/site/EntryPage.svelte';
 	import RichTextPage from '$lib/components/site/RichTextPage.svelte';
 	import SiteShell from '$lib/components/site/SiteShell.svelte';
+	import {
+		getCollection,
+		getCollectionForEntry,
+		getEntriesForCollection,
+		getEntry,
+		getHomePage,
+		getPage,
+		resolvePreviewSelectionForPath,
+		resolveThemeKey
+	} from '$lib/content/site';
+	import type { PreviewSelection } from '$lib/components/admin/types';
 	import type { EditableEntityType, SiteSnapshot } from '$lib/types/content';
-	import { themes } from '$lib/types/theme';
 
 	type Props = {
 		snapshot: SiteSnapshot;
 		type: EditableEntityType | 'site';
 		slug: string;
+		collectionSlug?: string;
+		onNavigate?: ((selection: PreviewSelection) => void) | undefined;
 	};
 
-	let { snapshot, type, slug }: Props = $props();
+	let { snapshot, type, slug, collectionSlug, onNavigate }: Props = $props();
 
-	const previewItem = $derived.by(() => {
-		switch (type) {
-			case 'page':
-				return getPage(snapshot, slug);
-			case 'post':
-				return getPost(snapshot, slug);
-			case 'event':
-				return getEvent(snapshot, slug);
-			case 'gallery':
-				return getGallery(snapshot, slug);
-			case 'collection':
-				return getCollection(snapshot, slug);
-			default:
-				return undefined;
+	const previewPage = $derived(type === 'page' ? getPage(snapshot, slug) : undefined);
+	const previewCollection = $derived(
+		type === 'collection'
+			? getCollection(snapshot, slug)
+			: type === 'entry' && collectionSlug
+				? getCollection(snapshot, collectionSlug)
+				: undefined
+	);
+	const previewEntry = $derived(
+		type === 'entry' && collectionSlug ? getEntry(snapshot, collectionSlug, slug) : undefined
+	);
+
+	const previewTheme = $derived(
+		resolveThemeKey(snapshot, previewEntry ?? previewCollection ?? previewPage)
+	);
+	const homePage = $derived(getHomePage(snapshot));
+	const transitionKey = $derived(
+		type === 'site'
+			? `site:${homePage?.slug ?? 'none'}`
+			: type === 'page' && previewPage
+				? `page:${previewPage.slug}`
+				: type === 'collection' && previewCollection
+					? `collection:${previewCollection.slug}`
+					: type === 'entry' && previewEntry
+						? `entry:${previewEntry.collectionSlug}:${previewEntry.slug}`
+						: 'empty'
+	);
+
+	function handlePreviewNavigate(path: string) {
+		const selection = resolvePreviewSelectionForPath(snapshot, path);
+		if (selection && onNavigate) {
+			onNavigate(selection);
 		}
-	});
-
-	const previewTheme = $derived(resolveThemeKey(snapshot, previewItem));
-	const home = $derived(homepageData(snapshot));
-	const previewGallery = $derived(type === 'gallery' ? getGallery(snapshot, slug) : undefined);
+	}
 </script>
 
-<SiteShell
-	theme={previewTheme}
-	siteName={snapshot.site.business.name}
-	tagline={snapshot.site.business.tagline}
-	navigation={snapshot.site.navigation}
-	socialLinks={snapshot.site.socialLinks}
-	activePath={type === 'site' ? '/' : `/${slug}`}
->
-	{#snippet children()}
-		{#if type === 'site'}
-			<HomePage
-				title={snapshot.site.business.name}
-				tagline={snapshot.site.business.tagline}
-				description={snapshot.site.business.description}
-				heroImage={home.gallery?.coverImage ?? '/uploads/artist-studio.svg'}
-				heroCtaLabel={snapshot.site.homepage.heroCtaLabel}
-				heroCtaPath={snapshot.site.homepage.heroCtaPath}
-				pages={home.pages}
-				collections={home.collections}
-				posts={home.posts}
-				events={home.events}
-				gallery={home.gallery}
-				heroAlign={themes[previewTheme].heroAlign}
-			/>
-		{:else if type === 'gallery' && previewGallery}
-			<GalleryGrid gallery={previewGallery} />
-		{:else if slug === 'contact'}
-			<ContactPanel {...snapshot.site.contact} />
-		{:else if previewItem && 'html' in previewItem}
-			<RichTextPage title={previewItem.title} excerpt={previewItem.excerpt} html={previewItem.html} />
-		{:else if previewItem}
-			<section class="collection">
-				<h1>{previewItem.title}</h1>
-				<p>{previewItem.description}</p>
-			</section>
-		{/if}
-	{/snippet}
-</SiteShell>
+{#key transitionKey}
+	<div class="preview-transition" in:fade={{ duration: 260, easing: cubicOut }}>
+		<SiteShell
+			theme={previewTheme}
+			siteName={snapshot.site.business.name}
+			tagline={snapshot.site.business.tagline}
+			navigation={snapshot.site.navigation}
+			onNavigate={onNavigate ? handlePreviewNavigate : undefined}
+			socialLinks={snapshot.site.socialLinks}
+			activePath={
+				type === 'site'
+					? '/'
+					: type === 'page' && previewPage
+						? `/${previewPage.slug}`
+						: previewCollection
+							? `/${previewCollection.routeBase}`
+							: '/'
+			}
+		>
+			{#snippet children()}
+				{#if type === 'site'}
+					{#if homePage?.slug === 'contact'}
+						<ContactPanel {...snapshot.site.contact} />
+					{:else if homePage}
+						<RichTextPage title={homePage.title} excerpt={homePage.excerpt} html={homePage.html} />
+					{/if}
+				{:else if type === 'page' && previewPage}
+					{#if previewPage.slug === 'contact'}
+						<ContactPanel {...snapshot.site.contact} />
+					{:else}
+						<RichTextPage title={previewPage.title} excerpt={previewPage.excerpt} html={previewPage.html} />
+					{/if}
+				{:else if type === 'collection' && previewCollection}
+					<CollectionPage collection={previewCollection} entries={getEntriesForCollection(snapshot, previewCollection.slug)} />
+				{:else if type === 'entry' && previewCollection && previewEntry}
+					<EntryPage collection={previewCollection} entry={previewEntry} />
+				{/if}
+			{/snippet}
+		</SiteShell>
+	</div>
+{/key}
 
 <style>
-	.collection {
-		background: var(--site-surface);
-		border: 1px solid var(--site-border);
-		border-radius: var(--site-radius);
-		padding: 2rem;
-	}
-
-	h1 {
-		font-family: var(--site-heading-font);
-		font-size: clamp(2.2rem, 5vw, 4rem);
-		margin: 0 0 1rem;
-	}
-
-	p {
-		color: var(--site-muted);
-		line-height: 1.7;
+	.preview-transition {
+		min-height: 100%;
 	}
 </style>

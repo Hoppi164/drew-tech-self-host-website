@@ -1,0 +1,14 @@
+{
+  "title": "Events",
+  "slug": "studio-events",
+  "description": "Event collections work for classes, launches, exhibitions, tours, and seasonal open days.",
+  "kind": "event",
+  "routeBase": "events",
+  "layout": "timeline",
+  "entryOrder": "date-desc",
+  "showDate": true,
+  "showExcerpt": true,
+  "showFeaturedImage": true,
+  "showImageGrid": false,
+  "showBodyPreview": true
+}

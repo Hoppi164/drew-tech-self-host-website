@@ -34,12 +34,12 @@
       "path": "/about"
     },
     {
-      "label": "Collections",
-      "path": "/collections"
+      "label": "Journal",
+      "path": "/journal"
     },
     {
-      "label": "Journal",
-      "path": "/posts"
+      "label": "Galleries",
+      "path": "/galleries"
     },
     {
       "label": "Events",
@@ -51,23 +51,7 @@
     }
   ],
   "homepage": {
-    "featuredPageSlugs": [
-      "about",
-      "services"
-    ],
-    "featuredCollectionSlugs": [
-      "seasonal-stories"
-    ],
-    "featuredGallerySlug": "atelier-highlights",
-    "featuredPostSlugs": [
-      "spring-launch",
-      "artist-open-day"
-    ],
-    "featuredEventSlugs": [
-      "winter-studio-night"
-    ],
-    "heroCtaLabel": "Book a consultation",
-    "heroCtaPath": "/contact"
+    "homePageSlug": "home"
   },
   "contact": {
     "title": "Start with a simple conversation",
@@ -82,9 +66,6 @@
     "global": "artist-loft"
   },
   "enabledSections": {
-    "posts": true,
-    "events": true,
-    "collections": true,
-    "galleries": true
+    "collections": true
   }
 }

@@ -1,0 +1,14 @@
+{
+  "title": "Journal",
+  "slug": "blog-posts",
+  "description": "Use article collections for launch notes, project recaps, advice pieces, or studio essays.",
+  "kind": "article",
+  "routeBase": "journal",
+  "layout": "cards",
+  "entryOrder": "title-asc",
+  "showDate": false,
+  "showExcerpt": true,
+  "showFeaturedImage": true,
+  "showImageGrid": false,
+  "showBodyPreview": true
+}
