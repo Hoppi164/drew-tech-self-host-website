@@ -1,17 +1,16 @@
 import type {
 	NavigationItem,
 	SiteCollection,
-	SiteEvent,
-	SiteGallery,
+	SiteEntry,
+	SiteGalleryEntry,
 	SitePage,
-	SitePost,
 	SocialLink
 } from '$lib/types/content';
 
 export const navigation: NavigationItem[] = [
 	{ label: 'Home', path: '/' },
 	{ label: 'About', path: '/about' },
-	{ label: 'Journal', path: '/posts' },
+	{ label: 'Journal', path: '/journal' },
 	{ label: 'Contact', path: '/contact' }
 ];
 
@@ -26,7 +25,7 @@ export const pages: SitePage[] = [
 		slug: 'about',
 		excerpt: 'A flexible story page for any small business.',
 		featuredImage: '/uploads/artist-studio.svg',
-		theme: 'artist-loft',
+		theme: undefined,
 		body: 'Body copy',
 		html: '<p>Body copy</p>',
 		sourcePath: 'content/pages/about.md'
@@ -36,61 +35,75 @@ export const pages: SitePage[] = [
 		slug: 'services',
 		excerpt: 'A calm and practical services page.',
 		featuredImage: '/uploads/garden-path.svg',
-		theme: 'garden-journal',
+		theme: undefined,
 		body: 'Body copy',
 		html: '<p>Body copy</p>',
 		sourcePath: 'content/pages/services.md'
 	}
 ];
 
-export const posts: SitePost[] = [
+export const collections: SiteCollection[] = [
 	{
-		title: 'Spring Launch Notes',
-		slug: 'spring-launch',
-		excerpt: 'A sample journal entry for launch updates or announcements.',
-		featuredImage: '/uploads/artist-studio.svg',
-		theme: 'artist-loft',
-		date: '2026-03-16',
-		body: 'Post body',
-		html: '<p>Post body</p>',
-		sourcePath: 'content/posts/spring-launch.md'
+		title: 'Journal',
+		slug: 'blog-posts',
+		description: 'A default article collection for announcements, reflections, and updates.',
+		theme: undefined,
+		kind: 'article',
+		routeBase: 'journal',
+		layout: 'cards',
+		entryOrder: 'date-desc',
+		showDate: true,
+		showExcerpt: true,
+		showFeaturedImage: true,
+		showImageGrid: false,
+		showBodyPreview: true,
+		sourcePath: 'content/collections/blog-posts.json'
 	},
 	{
-		title: 'Open Day Invitations',
-		slug: 'artist-open-day',
-		excerpt: 'A second post to populate listing views and homepage cards.',
-		featuredImage: '/uploads/contact-desk.svg',
-		theme: 'artisan-bloom',
-		date: '2026-04-09',
-		body: 'Post body',
-		html: '<p>Post body</p>',
-		sourcePath: 'content/posts/artist-open-day.md'
-	}
-];
-
-export const events: SiteEvent[] = [
+		title: 'Galleries',
+		slug: 'image-galleries',
+		description: 'A gallery collection for visual case studies and portfolio sets.',
+		theme: undefined,
+		kind: 'gallery',
+		routeBase: 'galleries',
+		layout: 'gallery',
+		entryOrder: 'manual',
+		showDate: false,
+		showExcerpt: true,
+		showFeaturedImage: true,
+		showImageGrid: true,
+		showBodyPreview: false,
+		sourcePath: 'content/collections/image-galleries.json'
+	},
 	{
-		title: 'Winter Studio Night',
-		slug: 'winter-studio-night',
-		excerpt: 'An example event card for exhibitions, classes, or seasonal sales.',
-		featuredImage: '/uploads/artist-studio.svg',
-		theme: 'midnight-press',
-		date: '2026-06-21',
-		location: 'West End Workshop',
-		body: 'Event body',
-		html: '<p>Event body</p>',
-		sourcePath: 'content/events/winter-studio-night.md'
+		title: 'Events',
+		slug: 'studio-events',
+		description: 'A dated collection for workshops, launches, and open days.',
+		theme: undefined,
+		kind: 'event',
+		routeBase: 'events',
+		layout: 'timeline',
+		entryOrder: 'date-desc',
+		showDate: true,
+		showExcerpt: true,
+		showFeaturedImage: true,
+		showImageGrid: false,
+		showBodyPreview: true,
+		sourcePath: 'content/collections/studio-events.json'
 	}
 ];
 
-export const gallery: SiteGallery = {
+export const gallery: SiteGalleryEntry = {
 	title: 'Atelier Highlights',
 	slug: 'atelier-highlights',
-	description: 'A compact gallery demo.',
-	coverImage: '/uploads/artist-studio.svg',
-	theme: 'artist-loft',
-	sourcePath: 'content/galleries/atelier-highlights.json',
-	items: [
+	excerpt: 'A compact gallery demo.',
+	featuredImage: '/uploads/artist-studio.svg',
+	theme: undefined,
+	body: 'Gallery body',
+	html: '<p>Gallery body</p>',
+	kind: 'gallery',
+	collectionSlug: 'image-galleries',
+	images: [
 		{
 			src: '/uploads/artist-studio.svg',
 			alt: 'Artist studio illustration',
@@ -105,19 +118,51 @@ export const gallery: SiteGallery = {
 			tags: ['garden'],
 			attribution: 'Template demo'
 		}
-	]
+	],
+	sourcePath: 'content/entries/image-galleries/atelier-highlights.json'
 };
 
-export const collections: SiteCollection[] = [
+export const entries: SiteEntry[] = [
 	{
-		title: 'Seasonal Stories',
-		slug: 'seasonal-stories',
-		description: 'Collections can group pages, galleries, posts, or events around a campaign or business line.',
-		theme: 'coastal-clarity',
-		pageSlugs: ['services'],
-		gallerySlugs: ['atelier-highlights'],
-		postSlugs: ['spring-launch'],
-		eventSlugs: ['winter-studio-night'],
-		sourcePath: 'content/collections/seasonal-stories.json'
-	}
+		title: 'Spring Launch Notes',
+		slug: 'spring-launch',
+		excerpt: 'A sample journal entry for launch updates or announcements.',
+		featuredImage: '/uploads/artist-studio.svg',
+		theme: undefined,
+		body: 'Post body',
+		html: '<p>Post body</p>',
+		kind: 'article',
+		tags: ['launch', 'studio'],
+		collectionSlug: 'blog-posts',
+		sourcePath: 'content/entries/blog-posts/spring-launch.md'
+	},
+	{
+		title: 'Open Day Invitations',
+		slug: 'artist-open-day',
+		excerpt: 'A second post to populate listing views and homepage cards.',
+		featuredImage: '/uploads/contact-desk.svg',
+		theme: undefined,
+		body: 'Post body',
+		html: '<p>Post body</p>',
+		kind: 'article',
+		tags: ['open-day'],
+		collectionSlug: 'blog-posts',
+		sourcePath: 'content/entries/blog-posts/artist-open-day.md'
+	},
+	{
+		title: 'Winter Studio Night',
+		slug: 'winter-studio-night',
+		excerpt: 'An example event card for exhibitions, classes, or seasonal sales.',
+		featuredImage: '/uploads/artist-studio.svg',
+		theme: undefined,
+		date: '2026-06-21',
+		location: 'West End Workshop',
+		body: 'Event body',
+		html: '<p>Event body</p>',
+		kind: 'event',
+		tags: ['event'],
+		collectionSlug: 'studio-events',
+		sourcePath: 'content/entries/studio-events/winter-studio-night.md'
+	},
+	gallery
 ];

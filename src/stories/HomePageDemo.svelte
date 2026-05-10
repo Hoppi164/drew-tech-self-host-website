@@ -2,7 +2,7 @@
 	import HomePage from '$lib/components/site/HomePage.svelte';
 	import ThemeFrame from '$lib/components/storybook/ThemeFrame.svelte';
 	import type { ThemeKey } from '$lib/types/theme';
-	import { collections, events, gallery, pages, posts } from './fixtures';
+	import { collections, entries, gallery, pages } from './fixtures';
 
 	type Props = {
 		theme: ThemeKey;
@@ -17,14 +17,12 @@
 			title="Northwind Studio"
 			tagline="Reusable sites with a distinct visual voice."
 			description="The homepage assembles featured content blocks and adapts to each theme pack."
-			heroImage={gallery.coverImage}
+			heroImage={gallery.featuredImage}
 			heroCtaLabel="Start here"
 			heroCtaPath="/contact"
 			{pages}
 			{collections}
-			{posts}
-			{events}
-			{gallery}
+			{entries}
 			heroAlign="start"
 		/>
 	{/snippet}

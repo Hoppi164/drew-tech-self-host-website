@@ -1,9 +1,9 @@
 <script lang="ts">
-	import type { SiteGallery } from '$lib/types/content';
+	import type { SiteGalleryEntry } from '$lib/types/content';
 	import { withBase } from '$lib/utils/links';
 
 	type Props = {
-		gallery: SiteGallery;
+		gallery: SiteGalleryEntry;
 	};
 
 	let { gallery }: Props = $props();
@@ -12,10 +12,10 @@
 <section class="section">
 	<div class="section-head">
 		<h2>{gallery.title}</h2>
-		<p>{gallery.description}</p>
+		<p>{gallery.excerpt}</p>
 	</div>
 	<div class="grid">
-		{#each gallery.items as item}
+		{#each gallery.images as item}
 			<figure>
 				<img src={withBase(item.src)} alt={item.alt} />
 				<figcaption>
