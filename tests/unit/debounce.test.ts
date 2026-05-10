@@ -10,7 +10,7 @@ describe('createDebouncedCallback', () => {
 		debounced.schedule('about');
 		debounced.schedule('about-us');
 
-		vi.advanceTimersByTime(349);
+		vi.advanceTimersByTime(849);
 		expect(callback).not.toHaveBeenCalled();
 
 		vi.advanceTimersByTime(1);

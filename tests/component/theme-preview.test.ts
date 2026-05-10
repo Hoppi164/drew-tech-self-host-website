@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/svelte';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/svelte';
 import { describe, expect, it, vi } from 'vitest';
 import AdminWorkspace from '$lib/components/admin/AdminWorkspace.svelte';
 import type { SiteSnapshot } from '$lib/types/content';
@@ -182,8 +182,9 @@ describe('Admin theme preview', () => {
 
 		expect(screen.getByLabelText('Global Theme')).toBeTruthy();
 
-		const previewAboutLink = container.querySelector('.preview-frame nav a[href="/about"]');
-		expect(previewAboutLink).toBeTruthy();
+		const previewFrame = container.querySelector('.preview-frame');
+		expect(previewFrame).toBeTruthy();
+		const previewAboutLink = within(previewFrame as HTMLElement).getByRole('link', { name: 'About' });
 
 		await fireEvent.click(previewAboutLink as HTMLAnchorElement);
 
