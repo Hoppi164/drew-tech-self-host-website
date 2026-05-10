@@ -159,6 +159,10 @@ describe('github helpers', () => {
 				return { ok: true, json: async () => ({ object: { sha: 'head-commit-sha' } }) };
 			}
 
+			if (input.endsWith('/repos/demo/repo/git/refs/heads/main') && init?.method === 'PATCH') {
+				return { ok: true, json: async () => ({ object: { sha: 'new-commit-sha' } }) };
+			}
+
 			if (input.endsWith('/repos/demo/repo/git/commits/head-commit-sha')) {
 				return { ok: true, json: async () => ({ sha: 'head-commit-sha', tree: { sha: 'base-tree-sha' } }) };
 			}
@@ -209,7 +213,7 @@ describe('github helpers', () => {
 			([url, init]) => String(url).endsWith('/git/commits') && init?.method === 'POST'
 		);
 		const refPatchCalls = fetchMock.mock.calls.filter(
-			([url, init]) => String(url).endsWith('/git/ref/heads/main') && init?.method === 'PATCH'
+			([url, init]) => String(url).endsWith('/git/refs/heads/main') && init?.method === 'PATCH'
 		);
 		const contentsPutCalls = fetchMock.mock.calls.filter(
 			([url, init]) => String(url).includes('/contents/') && init?.method === 'PUT'

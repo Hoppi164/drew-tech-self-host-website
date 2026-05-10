@@ -63,7 +63,8 @@ async function getJson<T>(token: string, url: string) {
 	});
 
 	if (!response.ok) {
-		throw new Error(`GitHub request failed for ${url}.`);
+		const details = await response.text();
+		throw new Error(`GitHub request failed for ${url} (${response.status}): ${details || response.statusText}`);
 	}
 
 	return (await response.json()) as T;
@@ -80,7 +81,8 @@ async function postJson<T>(token: string, url: string, body: Record<string, unkn
 	});
 
 	if (!response.ok) {
-		throw new Error(`GitHub request failed for ${url}.`);
+		const details = await response.text();
+		throw new Error(`GitHub request failed for ${url} (${response.status}): ${details || response.statusText}`);
 	}
 
 	return (await response.json()) as T;
@@ -97,7 +99,8 @@ async function patchJson<T>(token: string, url: string, body: Record<string, unk
 	});
 
 	if (!response.ok) {
-		throw new Error(`GitHub request failed for ${url}.`);
+		const details = await response.text();
+		throw new Error(`GitHub request failed for ${url} (${response.status}): ${details || response.statusText}`);
 	}
 
 	return (await response.json()) as T;
@@ -180,7 +183,7 @@ async function createCommit(
 async function updateBranchHead(token: string, repo: RepoConfig, commitSha: string) {
 	return patchJson<GitRefResponse>(
 		token,
-		`https://api.github.com/repos/${repo.owner}/${repo.name}/git/ref/heads/${repo.branch}`,
+		`https://api.github.com/repos/${repo.owner}/${repo.name}/git/refs/heads/${repo.branch}`,
 		{ sha: commitSha }
 	);
 }
