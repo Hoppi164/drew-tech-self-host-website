@@ -6,7 +6,12 @@
 	import AccordionPanel from '$lib/components/admin/AccordionPanel.svelte';
 	import InfoMarker from '$lib/components/admin/InfoMarker.svelte';
 	import SnapshotPreview from '$lib/components/preview/SnapshotPreview.svelte';
-	import { draftSourcePath, insertDraftEntity, updateRenderedBody } from '$lib/content/site';
+	import {
+		draftSourcePath,
+		insertDraftEntity,
+		normalizeSlug,
+		updateRenderedBody
+	} from '$lib/content/site';
 	import { isFineGrainedPat, publishSnapshot, validateToken } from '$lib/github/api';
 	import { adminSelection, adminSnapshot, adminToken, pendingUploads } from '$lib/stores/admin';
 	import {
@@ -179,16 +184,17 @@
 	}
 
 	function updatePageSlug(entity: SitePage, slug: string) {
+		const normalizedSlug = normalizeSlug(slug);
 		const next = updateRenderedBody({
 			...entity,
-			slug,
-			sourcePath: draftSourcePath('page', slug)
+			slug: normalizedSlug,
+			sourcePath: draftSourcePath('page', normalizedSlug)
 		});
 		draftSnapshot = insertDraftEntity(draftSnapshot, 'page', next, {
 			slug: entity.slug,
 			sourcePath: entity.sourcePath
 		});
-		choose('page', slug);
+		choose('page', normalizedSlug);
 	}
 
 	function updateGallery(field: keyof SiteGallery, value: string | undefined) {

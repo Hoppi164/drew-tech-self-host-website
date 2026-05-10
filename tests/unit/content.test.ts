@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
 	draftSourcePath,
 	insertDraftEntity,
+	normalizeSlug,
 	resolveThemeKey,
 	serializeSnapshot,
 	sortByDateDescending,
@@ -72,6 +73,10 @@ describe('content helpers', () => {
 		]);
 
 		expect(items[0].name).toBe('b');
+	});
+
+	it('normalizes slugs to lowercase hyphenated text', () => {
+		expect(normalizeSlug('  Contact Us Page  ')).toBe('contact-us-page');
 	});
 
 	it('falls back to global theme', () => {

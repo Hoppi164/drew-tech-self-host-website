@@ -14,6 +14,13 @@ export function sortByDateDescending<T extends { date: string }>(items: T[]) {
 	return [...items].sort((left, right) => new Date(right.date).getTime() - new Date(left.date).getTime());
 }
 
+export function normalizeSlug(value: string) {
+	return value
+		.trim()
+		.toLowerCase()
+		.replace(/\s+/g, '-');
+}
+
 export function getPage(snapshot: SiteSnapshot, slug: string) {
 	return snapshot.pages.find((page) => page.slug === slug);
 }
