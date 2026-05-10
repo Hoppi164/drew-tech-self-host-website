@@ -54,7 +54,8 @@
 		repo: repoUrl,
 		actions: `${repoUrl}/actions`,
 		pages: `${repoUrl}/settings/pages`,
-		token: 'https://github.com/settings/personal-access-tokens/new',
+		token:
+			'https://github.com/settings/personal-access-tokens/new?name=self-host-website&description=token-used-to-authenticate-admin-user-on-self-hosted-website&expires_in=none&contents=write&metadata=read',
 		settings: `${repoUrl}/settings`
 	});
 
@@ -278,8 +279,8 @@
 					<li><a href={githubLinks.token} target="_blank" rel="noreferrer">Create a fine-grained PAT</a></li>
 				</ol>
 				<p>
-					When creating the token, scope it to this repo and grant `Contents: write` plus
-					`Metadata: read`.
+					When creating the token, choose `Only select repositories`, pick this repo, and
+					grant `Contents: write` plus `Metadata: read`.
 				</p>
 			</div>
 		</div>

@@ -21,9 +21,8 @@ Fork this repo to launch a low-cost small-business website with a built-in brows
 3. Open your fork’s Pages settings and choose GitHub Actions as the source.
    - [github.com/YOUR_GITHUB_USERNAME/YOUR_REPOSITORY_NAME/settings/pages](https://github.com/YOUR_GITHUB_USERNAME/YOUR_REPOSITORY_NAME/settings/pages)
 4. Create a fine-grained personal access token for your fork.
-   - [github.com/settings/personal-access-tokens/new](https://github.com/settings/personal-access-tokens/new)
-   - Scope it to your fork only.
-   - Permissions: `Contents: write` and `Metadata: read`
+   - [Create the token with pre-filled settings](https://github.com/settings/personal-access-tokens/new?name=self-host-website&description=token-used-to-authenticate-admin-user-on-self-hosted-website&expires_in=none&contents=write&metadata=read)
+   - In `Repository access`, choose `Only select repositories` and pick your fork.
 5. Update [`content/site.json`](content/site.json) with your business details and your GitHub repo owner/name.
 6. Open `/admin` on your deployed site, paste the token, edit content, preview it, and publish.
 
