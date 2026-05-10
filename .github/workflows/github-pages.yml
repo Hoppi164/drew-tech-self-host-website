@@ -21,10 +21,12 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      BASE_PATH: /${{ github.event.repository.name }}
     steps:
       - uses: actions/checkout@v4
+      - name: Resolve base path
+        run: |
+          BASE_PATH=$(node -e "const fs=require('fs'); const site=JSON.parse(fs.readFileSync('content/site.json','utf8')); const raw=site?.repo?.basePath ?? ''; const normalized = raw === '/' ? '' : String(raw).trim(); process.stdout.write(normalized);")
+          echo "BASE_PATH=$BASE_PATH" >> "$GITHUB_ENV"
       - uses: actions/setup-node@v4
         with:
           node-version: 24

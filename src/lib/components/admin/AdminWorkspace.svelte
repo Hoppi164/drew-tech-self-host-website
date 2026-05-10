@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { base } from '$app/paths';
 	import { get } from 'svelte/store';
 	import SnapshotPreview from '$lib/components/preview/SnapshotPreview.svelte';
 	import { insertDraftEntity, updateRenderedBody } from '$lib/content/site';
@@ -339,7 +340,7 @@
 					{#if error}<p class="status-inline error">{error}</p>{/if}
 				</div>
 				<div class="workspace-actions">
-					<button class="ghost" onclick={() => goto(`/admin/preview?type=${activeType}&slug=${activeSlug}`)} type="button">
+					<button class="ghost" onclick={() => goto(`${base}/admin/preview?type=${activeType}&slug=${activeSlug}`)} type="button">
 						Open Full Preview
 					</button>
 					<button class="primary" onclick={publish} type="button">Publish to GitHub</button>
@@ -350,10 +351,13 @@
 				<section class="editor">
 					{#if activeType === 'site'}
 						<div class="panel">
-							<h3>Brand and Theme</h3>
+							<h3>Brand, Repo, and Theme</h3>
 							<label>Business Name <input value={draftSnapshot.site.business.name} oninput={(event) => updateSiteField('business.name', (event.currentTarget as HTMLInputElement).value)} /></label>
 							<label>Tagline <input value={draftSnapshot.site.business.tagline} oninput={(event) => updateSiteField('business.tagline', (event.currentTarget as HTMLInputElement).value)} /></label>
 							<label>Description <textarea oninput={(event) => updateSiteField('business.description', (event.currentTarget as HTMLTextAreaElement).value)}>{draftSnapshot.site.business.description}</textarea></label>
+							<label>GitHub Owner <input value={draftSnapshot.site.repo.owner} oninput={(event) => updateSiteField('repo.owner', (event.currentTarget as HTMLInputElement).value)} /></label>
+							<label>Repository Name <input value={draftSnapshot.site.repo.name} oninput={(event) => updateSiteField('repo.name', (event.currentTarget as HTMLInputElement).value)} /></label>
+							<label>Base Path <input value={draftSnapshot.site.repo.basePath} oninput={(event) => updateSiteField('repo.basePath', (event.currentTarget as HTMLInputElement).value)} placeholder='"" for root, "/gardening" for subpath' /></label>
 							<label>Global Theme
 								<select value={draftSnapshot.site.theme.global} oninput={(event) => updateSiteField('theme.global', (event.currentTarget as HTMLSelectElement).value)}>
 									{#each themeKeys as key}
