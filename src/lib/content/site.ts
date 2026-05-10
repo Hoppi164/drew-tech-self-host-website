@@ -102,10 +102,11 @@ function serializeMarkdown<T extends Record<string, unknown>>(entity: T & { body
 }
 
 function stripMeta<T extends Record<string, unknown>>(value: T) {
-	const clone = structuredClone(value);
-	delete clone.html;
-	delete clone.sourcePath;
-	return clone;
+	const { html: _html, sourcePath: _sourcePath, ...rest } = value as T & {
+		html?: unknown;
+		sourcePath?: unknown;
+	};
+	return rest;
 }
 
 export function updateRenderedBody<T extends SitePage | SitePost | SiteEvent>(value: T): T {

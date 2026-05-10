@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { insertDraftEntity, resolveThemeKey, sortByDateDescending, updateRenderedBody } from '$lib/content/site';
+import {
+	insertDraftEntity,
+	resolveThemeKey,
+	serializeSnapshot,
+	sortByDateDescending,
+	updateRenderedBody
+} from '$lib/content/site';
 import type { SiteSnapshot } from '$lib/types/content';
 
 const snapshot: SiteSnapshot = {
@@ -102,5 +108,28 @@ describe('content helpers', () => {
 
 		expect(next.pages).toHaveLength(1);
 		expect(next.pages[0].slug).toBe('page');
+	});
+
+	it('serializes a proxied snapshot for publishing', () => {
+		const proxiedSnapshot: SiteSnapshot = {
+			...snapshot,
+			site: new Proxy({ ...snapshot.site }, {}),
+			galleries: [
+				new Proxy(
+					{
+						title: 'Gallery',
+						slug: 'gallery',
+						description: 'Gallery description',
+						coverImage: '/uploads/cover.jpg',
+						theme: 'artist-loft',
+						items: [],
+						sourcePath: 'content/galleries/gallery.json'
+					},
+					{}
+				)
+			]
+		};
+
+		expect(() => serializeSnapshot(proxiedSnapshot)).not.toThrow();
 	});
 });
