@@ -27,8 +27,12 @@
 		return (value || undefined) as (typeof themeKeys)[number] | undefined;
 	}
 
+	function cloneSnapshot<T>(value: T): T {
+		return JSON.parse(JSON.stringify(value)) as T;
+	}
+
 	let { initialSnapshot }: Props = $props();
-	let draftSnapshot = $state<SiteSnapshot>(structuredClone(initialSnapshot));
+	let draftSnapshot = $state<SiteSnapshot>(cloneSnapshot(initialSnapshot));
 	let token = $state('');
 	let status = $state('');
 	let error = $state('');
@@ -116,7 +120,7 @@
 	}
 
 	function updateSiteField(path: string, value: string) {
-		const next = structuredClone(draftSnapshot);
+		const next = cloneSnapshot(draftSnapshot);
 		const target = next.site as Record<string, unknown>;
 		const segments = path.split('.');
 		let cursor: Record<string, unknown> = target;
@@ -135,7 +139,7 @@
 	}
 
 	function createEntity(type: EditableEntityType) {
-		const next = structuredClone(emptyDrafts[type]);
+		const next = cloneSnapshot(emptyDrafts[type]);
 		choose(type, next.slug);
 		upsertEntity(type, 'body' in next ? updateRenderedBody(next as SitePage | SitePost | SiteEvent) : next);
 	}
@@ -170,13 +174,13 @@
 		type: 'page' | 'post' | 'event',
 		entity: SitePage | SitePost | SiteEvent,
 		field: string,
-		value: string
+		value: string | undefined
 	) {
 		const next = { ...entity, [field]: value } as SitePage | SitePost | SiteEvent;
 		upsertEntity(type, updateRenderedBody(next));
 	}
 
-	function updateGallery(field: keyof SiteGallery, value: string) {
+	function updateGallery(field: keyof SiteGallery, value: string | undefined) {
 		if (!selectedGallery) return;
 		upsertEntity('gallery', { ...selectedGallery, [field]: value });
 	}
@@ -359,7 +363,7 @@
 							<label>Repository Name <input value={draftSnapshot.site.repo.name} oninput={(event) => updateSiteField('repo.name', (event.currentTarget as HTMLInputElement).value)} /></label>
 							<label>Base Path <input value={draftSnapshot.site.repo.basePath} oninput={(event) => updateSiteField('repo.basePath', (event.currentTarget as HTMLInputElement).value)} placeholder='"" for root, "/gardening" for subpath' /></label>
 							<label>Global Theme
-								<select value={draftSnapshot.site.theme.global} oninput={(event) => updateSiteField('theme.global', (event.currentTarget as HTMLSelectElement).value)}>
+								<select value={draftSnapshot.site.theme.global} onchange={(event) => updateSiteField('theme.global', (event.currentTarget as HTMLSelectElement).value)}>
 									{#each themeKeys as key}
 										<option value={key}>{themes[key].name}</option>
 									{/each}
@@ -373,7 +377,7 @@
 							<label>Slug <input value={selectedPage.slug} oninput={(event) => updateBody('page', selectedPage, 'slug', (event.currentTarget as HTMLInputElement).value)} /></label>
 							<label>Excerpt <textarea oninput={(event) => updateBody('page', selectedPage, 'excerpt', (event.currentTarget as HTMLTextAreaElement).value)}>{selectedPage.excerpt}</textarea></label>
 							<label>Page Theme
-								<select value={selectedPage.theme ?? ''} oninput={(event) => updateBody('page', selectedPage, 'theme', (event.currentTarget as HTMLSelectElement).value)}>
+								<select value={selectedPage.theme ?? ''} onchange={(event) => updateBody('page', selectedPage, 'theme', themeValueFromInput((event.currentTarget as HTMLSelectElement).value))}>
 									<option value="">Use global theme</option>
 									{#each themeKeys as key}
 										<option value={key}>{themes[key].name}</option>
@@ -388,7 +392,7 @@
 							<label>Title <input value={selectedPost.title} oninput={(event) => updateBody('post', selectedPost, 'title', (event.currentTarget as HTMLInputElement).value)} /></label>
 							<label>Date <input type="date" value={selectedPost.date} oninput={(event) => updateBody('post', selectedPost, 'date', (event.currentTarget as HTMLInputElement).value)} /></label>
 							<label>Post Theme
-								<select value={selectedPost.theme ?? ''} oninput={(event) => updateBody('post', selectedPost, 'theme', (event.currentTarget as HTMLSelectElement).value)}>
+								<select value={selectedPost.theme ?? ''} onchange={(event) => updateBody('post', selectedPost, 'theme', themeValueFromInput((event.currentTarget as HTMLSelectElement).value))}>
 									<option value="">Use global theme</option>
 									{#each themeKeys as key}
 										<option value={key}>{themes[key].name}</option>
@@ -404,7 +408,7 @@
 							<label>Date <input type="date" value={selectedEvent.date} oninput={(event) => updateBody('event', selectedEvent, 'date', (event.currentTarget as HTMLInputElement).value)} /></label>
 							<label>Location <input value={selectedEvent.location} oninput={(event) => updateBody('event', selectedEvent, 'location', (event.currentTarget as HTMLInputElement).value)} /></label>
 							<label>Event Theme
-								<select value={selectedEvent.theme ?? ''} oninput={(event) => updateBody('event', selectedEvent, 'theme', (event.currentTarget as HTMLSelectElement).value)}>
+								<select value={selectedEvent.theme ?? ''} onchange={(event) => updateBody('event', selectedEvent, 'theme', themeValueFromInput((event.currentTarget as HTMLSelectElement).value))}>
 									<option value="">Use global theme</option>
 									{#each themeKeys as key}
 										<option value={key}>{themes[key].name}</option>
@@ -419,7 +423,7 @@
 							<label>Title <input value={selectedGallery.title} oninput={(event) => updateGallery('title', (event.currentTarget as HTMLInputElement).value)} /></label>
 							<label>Description <textarea oninput={(event) => updateGallery('description', (event.currentTarget as HTMLTextAreaElement).value)}>{selectedGallery.description}</textarea></label>
 							<label>Gallery Theme
-								<select value={selectedGallery.theme ?? ''} oninput={(event) => updateGallery('theme', (event.currentTarget as HTMLSelectElement).value)}>
+								<select value={selectedGallery.theme ?? ''} onchange={(event) => updateGallery('theme', themeValueFromInput((event.currentTarget as HTMLSelectElement).value))}>
 									<option value="">Use global theme</option>
 									{#each themeKeys as key}
 										<option value={key}>{themes[key].name}</option>
@@ -441,7 +445,7 @@
 							<label>Title <input value={selectedCollection.title} oninput={(event) => upsertEntity('collection', { ...selectedCollection, title: (event.currentTarget as HTMLInputElement).value })} /></label>
 							<label>Description <textarea oninput={(event) => upsertEntity('collection', { ...selectedCollection, description: (event.currentTarget as HTMLTextAreaElement).value })}>{selectedCollection.description}</textarea></label>
 							<label>Collection Theme
-								<select value={selectedCollection.theme ?? ''} oninput={(event) => upsertEntity('collection', { ...selectedCollection, theme: themeValueFromInput((event.currentTarget as HTMLSelectElement).value) })}>
+								<select value={selectedCollection.theme ?? ''} onchange={(event) => upsertEntity('collection', { ...selectedCollection, theme: themeValueFromInput((event.currentTarget as HTMLSelectElement).value) })}>
 									<option value="">Use global theme</option>
 									{#each themeKeys as key}
 										<option value={key}>{themes[key].name}</option>

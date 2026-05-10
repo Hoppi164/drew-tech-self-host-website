@@ -8,7 +8,7 @@ import type {
 	SiteSnapshot
 } from '$lib/types/content';
 import { renderMarkdown } from '$lib/utils/markdown';
-import type { ThemeKey } from '$lib/types/theme';
+import { isThemeKey, type ThemeKey } from '$lib/types/theme';
 
 export function sortByDateDescending<T extends { date: string }>(items: T[]) {
 	return [...items].sort((left, right) => new Date(right.date).getTime() - new Date(left.date).getTime());
@@ -34,8 +34,11 @@ export function getCollection(snapshot: SiteSnapshot, slug: string) {
 	return snapshot.collections.find((collection) => collection.slug === slug);
 }
 
-export function resolveThemeKey(snapshot: SiteSnapshot, item?: { theme?: ThemeKey | undefined }) {
-	return item?.theme ?? snapshot.site.theme.global;
+export function resolveThemeKey(
+	snapshot: SiteSnapshot,
+	item?: { theme?: ThemeKey | string | undefined | null }
+) {
+	return item?.theme && isThemeKey(item.theme) ? item.theme : snapshot.site.theme.global;
 }
 
 export function homepageData(snapshot: SiteSnapshot) {

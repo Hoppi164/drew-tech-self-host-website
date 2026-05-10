@@ -55,17 +55,6 @@
 		transition:
 			background-color 180ms ease,
 			color 180ms ease;
-		--site-background: #f6f1e7;
-		--site-surface: #fffaf5;
-		--site-text: #241f1b;
-		--site-muted: #6d6257;
-		--site-accent: #af5a43;
-		--site-border: #dccab5;
-		--site-radius: 24px;
-		--site-heading-font: Georgia, serif;
-		--site-body-font: 'Segoe UI', sans-serif;
-		--site-shadow: 0 18px 40px rgba(0, 0, 0, 0.08);
-		--site-hero-glow: radial-gradient(circle at top left, rgba(175, 90, 67, 0.12), transparent 32%);
 	}
 
 	.topbar,

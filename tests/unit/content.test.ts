@@ -71,6 +71,10 @@ describe('content helpers', () => {
 		expect(resolveThemeKey(snapshot, undefined)).toBe('artist-loft');
 	});
 
+	it('treats a blank theme override as global theme', () => {
+		expect(resolveThemeKey(snapshot, { theme: '' as never })).toBe('artist-loft');
+	});
+
 	it('renders markdown when a draft body changes', () => {
 		const page = updateRenderedBody({
 			title: 'Page',
