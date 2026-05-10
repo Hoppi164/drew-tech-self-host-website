@@ -20,3 +20,4 @@ export const adminSnapshot = writable<SiteSnapshot | null>(null);
 export const adminSelection = writable<AdminSelection>({ type: 'site', slug: 'site' });
 export const adminToken = writable<string | null>(null);
 export const pendingUploads = writable<PendingUpload[]>([]);
+export const pendingDeletes = writable<string[]>([]);

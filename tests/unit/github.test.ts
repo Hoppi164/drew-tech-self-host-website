@@ -225,4 +225,118 @@ describe('github helpers', () => {
 		expect(refPatchCalls).toHaveLength(1);
 		expect(contentsPutCalls).toHaveLength(0);
 	});
+
+	it('publishes file deletions in the same commit flow', async () => {
+		const aboutContent = `---\ntitle: About\nslug: about\nexcerpt: Excerpt\n---\n\nAbout body\n`;
+		const siteContent = `{
+  "business": {
+    "name": "Demo",
+    "tagline": "Tagline",
+    "description": "Desc",
+    "email": "demo@example.com",
+    "phone": "123",
+    "location": "Brisbane",
+    "logoText": "Demo"
+  },
+  "repo": {
+    "owner": "demo",
+    "name": "repo",
+    "branch": "main",
+    "basePath": ""
+  },
+  "socialLinks": [],
+  "navigation": [],
+  "homepage": {
+    "featuredPageSlugs": [],
+    "featuredCollectionSlugs": [],
+    "featuredGallerySlug": "",
+    "featuredPostSlugs": [],
+    "featuredEventSlugs": [],
+    "heroCtaLabel": "Contact",
+    "heroCtaPath": "/contact"
+  },
+  "contact": {
+    "title": "Talk",
+    "intro": "Intro",
+    "email": "demo@example.com",
+    "phone": "123",
+    "address": "Here",
+    "ctaLabel": "Email",
+    "ctaUrl": "mailto:demo@example.com"
+  },
+  "theme": {
+    "global": "artist-loft"
+  },
+  "enabledSections": {
+    "posts": true,
+    "events": true,
+    "collections": true,
+    "galleries": true
+  }
+}
+`;
+
+		const fetchMock = vi.fn(async (input: string, init?: RequestInit) => {
+			if (input.endsWith('/repos/demo/repo/git/ref/heads/main')) {
+				return { ok: true, json: async () => ({ object: { sha: 'head-commit-sha' } }) };
+			}
+
+			if (input.endsWith('/repos/demo/repo/git/refs/heads/main') && init?.method === 'PATCH') {
+				return { ok: true, json: async () => ({ object: { sha: 'new-commit-sha' } }) };
+			}
+
+			if (input.endsWith('/repos/demo/repo/git/commits/head-commit-sha')) {
+				return { ok: true, json: async () => ({ sha: 'head-commit-sha', tree: { sha: 'base-tree-sha' } }) };
+			}
+
+			if (input.includes('/contents/content/site.json')) {
+				return { ok: true, json: async () => ({ content: btoa(siteContent), encoding: 'base64' }) };
+			}
+
+			if (input.includes('/contents/content/pages/about.md')) {
+				return { ok: true, json: async () => ({ content: btoa(aboutContent), encoding: 'base64' }) };
+			}
+
+			if (input.includes('/contents/content/pages/contact.md')) {
+				return { ok: true, json: async () => ({ content: btoa('old contact'), encoding: 'base64' }) };
+			}
+
+			if (input.endsWith('/repos/demo/repo/git/blobs')) {
+				throw new Error('Did not expect blob creation for a pure delete publish');
+			}
+
+			if (input.endsWith('/repos/demo/repo/git/trees')) {
+				return { ok: true, json: async () => ({ sha: 'new-tree-sha' }) };
+			}
+
+			if (input.endsWith('/repos/demo/repo/git/commits') && init?.method === 'POST') {
+				return { ok: true, json: async () => ({ sha: 'new-commit-sha' }) };
+			}
+
+			throw new Error(`Unexpected fetch: ${input}`);
+		});
+
+		vi.stubGlobal('fetch', fetchMock);
+
+		await publishSnapshot(
+			'github_pat_123',
+			{
+				owner: 'demo',
+				name: 'repo',
+				branch: 'main'
+			},
+			{
+				...snapshot,
+				pages: snapshot.pages.filter((page) => page.slug === 'about')
+			},
+			[],
+			['content/pages/contact.md']
+		);
+
+		const treeCall = fetchMock.mock.calls.find(([url]) => String(url).endsWith('/git/trees'));
+		expect(treeCall).toBeDefined();
+		expect(JSON.parse(String(treeCall?.[1]?.body))).toMatchObject({
+			tree: [{ path: 'content/pages/contact.md', sha: null }]
+		});
+	});
 });

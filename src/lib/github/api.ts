@@ -36,6 +36,10 @@ type PublishCandidate = {
 	encoding: 'utf-8' | 'base64';
 };
 
+type TreeEntry =
+	| { path: string; mode: '100644'; type: 'blob'; sha: string }
+	| { path: string; mode: '100644'; type: 'blob'; sha: null };
+
 function authHeaders(token: string) {
 	return {
 		Accept: 'application/vnd.github+json',
@@ -158,7 +162,7 @@ async function createTree(
 	token: string,
 	repo: RepoConfig,
 	baseTreeSha: string,
-	entries: { path: string; mode: '100644'; type: 'blob'; sha: string }[]
+	entries: TreeEntry[]
 ) {
 	return postJson<{ sha: string }>(token, `https://api.github.com/repos/${repo.owner}/${repo.name}/git/trees`, {
 		base_tree: baseTreeSha,
@@ -230,6 +234,19 @@ async function filterChangedCandidates(token: string, repo: RepoConfig, candidat
 	return changed;
 }
 
+async function filterExistingDeletes(token: string, repo: RepoConfig, deletedPaths: string[]) {
+	const existingDeletes: string[] = [];
+
+	for (const path of deletedPaths) {
+		const existing = await readRepoFile(token, repo, path);
+		if (existing !== undefined) {
+			existingDeletes.push(path);
+		}
+	}
+
+	return existingDeletes;
+}
+
 export function isFineGrainedPat(token: string) {
 	return token.startsWith('github_pat_');
 }
@@ -250,12 +267,18 @@ export async function publishSnapshot(
 	token: string,
 	repo: RepoConfig,
 	snapshot: SiteSnapshot,
-	pendingUploads: PublishUpload[]
+	pendingUploads: PublishUpload[],
+	pendingDeletes: string[] = []
 ) {
 	const candidates = buildPublishCandidates(snapshot, pendingUploads);
 	const changedCandidates = await filterChangedCandidates(token, repo, candidates);
+	const deletedPaths = await filterExistingDeletes(
+		token,
+		repo,
+		pendingDeletes.filter((path) => !candidates.some((candidate) => candidate.path === path))
+	);
 
-	if (!changedCandidates.length) {
+	if (!changedCandidates.length && !deletedPaths.length) {
 		return;
 	}
 
@@ -263,7 +286,7 @@ export async function publishSnapshot(
 	const parentSha = head.object.sha;
 	const commit = await getCommit(token, repo, parentSha);
 
-	const treeEntries = [];
+	const treeEntries: TreeEntry[] = [];
 	for (const candidate of changedCandidates) {
 		const blobSha = await createBlob(token, repo, candidate.content, candidate.encoding);
 		treeEntries.push({
@@ -274,11 +297,20 @@ export async function publishSnapshot(
 		});
 	}
 
+	for (const path of deletedPaths) {
+		treeEntries.push({
+			path,
+			mode: '100644',
+			type: 'blob',
+			sha: null
+		});
+	}
+
 	const tree = await createTree(token, repo, commit.tree.sha, treeEntries);
 	const nextCommit = await createCommit(
 		token,
 		repo,
-		`content: publish ${changedCandidates.length} update${changedCandidates.length === 1 ? '' : 's'}`,
+		`content: publish ${treeEntries.length} change${treeEntries.length === 1 ? '' : 's'}`,
 		tree.sha,
 		parentSha
 	);

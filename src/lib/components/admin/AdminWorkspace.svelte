@@ -4,6 +4,7 @@
 	import { untrack } from 'svelte';
 	import { get } from 'svelte/store';
 	import AccordionPanel from '$lib/components/admin/AccordionPanel.svelte';
+	import ConfirmDialog from '$lib/components/admin/ConfirmDialog.svelte';
 	import InfoMarker from '$lib/components/admin/InfoMarker.svelte';
 	import SnapshotPreview from '$lib/components/preview/SnapshotPreview.svelte';
 	import {
@@ -13,7 +14,13 @@
 		updateRenderedBody
 	} from '$lib/content/site';
 	import { isFineGrainedPat, publishSnapshot, validateToken } from '$lib/github/api';
-	import { adminSelection, adminSnapshot, adminToken, pendingUploads } from '$lib/stores/admin';
+	import {
+		adminSelection,
+		adminSnapshot,
+		adminToken,
+		pendingDeletes,
+		pendingUploads
+	} from '$lib/stores/admin';
 	import {
 		emptyDrafts,
 		type EditableEntityType,
@@ -51,6 +58,8 @@
 	let uploadCaption = $state('');
 	let uploadTags = $state('');
 	let uploadAttribution = $state('');
+	let deleteDialogOpen = $state(false);
+	let pendingPageDelete = $state<SitePage | null>(null);
 
 	$effect(() => {
 		adminSnapshot.set(draftSnapshot);
@@ -138,6 +147,7 @@
 		type: EditableEntityType,
 		entity: SitePage | SitePost | SiteEvent | SiteGallery | SiteCollection
 	) {
+		pendingDeletes.update((paths) => paths.filter((path) => path !== entity.sourcePath));
 		draftSnapshot = insertDraftEntity(draftSnapshot, type, entity);
 	}
 
@@ -195,6 +205,46 @@
 			sourcePath: entity.sourcePath
 		});
 		choose('page', normalizedSlug);
+	}
+
+	function deletePage(page: SitePage) {
+		pendingDeletes.update((paths) => Array.from(new Set([...paths, page.sourcePath])));
+		draftSnapshot = {
+			...draftSnapshot,
+			pages: draftSnapshot.pages.filter((entry) => entry.sourcePath !== page.sourcePath),
+			site: {
+				...draftSnapshot.site,
+				homepage: {
+					...draftSnapshot.site.homepage,
+					featuredPageSlugs: draftSnapshot.site.homepage.featuredPageSlugs.filter(
+						(slug) => slug !== page.slug
+					)
+				}
+			}
+		};
+
+		const fallbackPage = draftSnapshot.pages.find((entry) => entry.sourcePath !== page.sourcePath);
+		if (fallbackPage) {
+			choose('page', fallbackPage.slug);
+			return;
+		}
+
+		choose('site', 'site');
+	}
+
+	function promptDeletePage(page: SitePage) {
+		pendingPageDelete = page;
+		deleteDialogOpen = true;
+	}
+
+	function confirmDeletePage() {
+		if (!pendingPageDelete) return;
+		deletePage(pendingPageDelete);
+		pendingPageDelete = null;
+	}
+
+	function clearPendingDelete() {
+		pendingPageDelete = null;
 	}
 
 	function updateGallery(field: keyof SiteGallery, value: string | undefined) {
@@ -255,9 +305,16 @@
 		error = '';
 		status = 'Publishing changes to GitHub...';
 		try {
-			await publishSnapshot(currentToken, repo, draftSnapshot, get(pendingUploads));
+			await publishSnapshot(
+				currentToken,
+				repo,
+				draftSnapshot,
+				get(pendingUploads),
+				get(pendingDeletes)
+			);
 			status = 'Published. GitHub Actions should rebuild the site shortly.';
 			pendingUploads.set([]);
+			pendingDeletes.set([]);
 		} catch (caught) {
 			error = caught instanceof Error ? caught.message : 'Publish failed.';
 		}
@@ -429,6 +486,7 @@
 								</select>
 							</label>
 							<label>Body <textarea class="body" oninput={(event) => updateBody('page', selectedPage, 'body', (event.currentTarget as HTMLTextAreaElement).value)}>{selectedPage.body}</textarea></label>
+							<button class="danger" onclick={() => promptDeletePage(selectedPage)} type="button">Delete Page</button>
 						</div>
 					{:else if activeType === 'post' && selectedPost}
 						<div class="panel">
@@ -520,6 +578,19 @@
 			</div>
 		</section>
 	</div>
+
+	<ConfirmDialog
+		bind:open={deleteDialogOpen}
+		title="Delete Page?"
+		description={pendingPageDelete
+			? `This will remove "${pendingPageDelete.title}" from the site and delete its content file the next time you publish.`
+			: 'This will remove the selected page from the site.'}
+		confirmLabel="Delete Page"
+		cancelLabel="Keep Page"
+		tone="danger"
+		onconfirm={confirmDeletePage}
+		onclose={clearPendingDelete}
+	/>
 {/if}
 
 <style>
@@ -791,6 +862,12 @@
 	button.primary {
 		background: #1f3046;
 		color: white;
+	}
+
+	button.danger {
+		background: #fff1f1;
+		color: #8f1f2c;
+		border: 1px solid #efc7cd;
 	}
 
 	button.login-button {
