@@ -8,9 +8,32 @@ export type RepoConfig = {
 };
 
 type GithubFileResponse = {
-	sha: string;
 	content?: string;
 	encoding?: string;
+};
+
+type GitRefResponse = {
+	object: {
+		sha: string;
+	};
+};
+
+type GitCommitResponse = {
+	sha: string;
+	tree: {
+		sha: string;
+	};
+};
+
+type PublishUpload = {
+	path: string;
+	bytes: Uint8Array;
+};
+
+type PublishCandidate = {
+	path: string;
+	content: string;
+	encoding: 'utf-8' | 'base64';
 };
 
 function authHeaders(token: string) {
@@ -19,6 +42,189 @@ function authHeaders(token: string) {
 		Authorization: `Bearer ${token}`,
 		'X-GitHub-Api-Version': '2022-11-28'
 	};
+}
+
+function toBase64(content: string) {
+	return btoa(unescape(encodeURIComponent(content)));
+}
+
+function binaryToBase64(bytes: Uint8Array) {
+	const binary = Array.from(bytes, (byte) => String.fromCharCode(byte)).join('');
+	return btoa(binary);
+}
+
+function decodeBase64Content(content: string) {
+	return decodeURIComponent(escape(atob(content.replace(/\n/g, ''))));
+}
+
+async function getJson<T>(token: string, url: string) {
+	const response = await fetch(url, {
+		headers: authHeaders(token)
+	});
+
+	if (!response.ok) {
+		throw new Error(`GitHub request failed for ${url}.`);
+	}
+
+	return (await response.json()) as T;
+}
+
+async function postJson<T>(token: string, url: string, body: Record<string, unknown>) {
+	const response = await fetch(url, {
+		method: 'POST',
+		headers: {
+			...authHeaders(token),
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify(body)
+	});
+
+	if (!response.ok) {
+		throw new Error(`GitHub request failed for ${url}.`);
+	}
+
+	return (await response.json()) as T;
+}
+
+async function patchJson<T>(token: string, url: string, body: Record<string, unknown>) {
+	const response = await fetch(url, {
+		method: 'PATCH',
+		headers: {
+			...authHeaders(token),
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify(body)
+	});
+
+	if (!response.ok) {
+		throw new Error(`GitHub request failed for ${url}.`);
+	}
+
+	return (await response.json()) as T;
+}
+
+async function readRepoFile(token: string, repo: RepoConfig, filePath: string) {
+	const response = await fetch(
+		`https://api.github.com/repos/${repo.owner}/${repo.name}/contents/${filePath}?ref=${repo.branch}`,
+		{
+			headers: authHeaders(token)
+		}
+	);
+
+	if (response.status === 404) {
+		return undefined;
+	}
+
+	if (!response.ok) {
+		throw new Error(`Failed to read ${filePath} from GitHub.`);
+	}
+
+	const data = (await response.json()) as GithubFileResponse;
+	if (!data.content || data.encoding !== 'base64') {
+		throw new Error(`Unexpected GitHub content response for ${filePath}.`);
+	}
+
+	return decodeBase64Content(data.content);
+}
+
+async function createBlob(token: string, repo: RepoConfig, content: string, encoding: 'utf-8' | 'base64') {
+	const response = await postJson<{ sha: string }>(
+		token,
+		`https://api.github.com/repos/${repo.owner}/${repo.name}/git/blobs`,
+		{ content, encoding }
+	);
+
+	return response.sha;
+}
+
+async function getBranchHead(token: string, repo: RepoConfig) {
+	return getJson<GitRefResponse>(
+		token,
+		`https://api.github.com/repos/${repo.owner}/${repo.name}/git/ref/heads/${repo.branch}`
+	);
+}
+
+async function getCommit(token: string, repo: RepoConfig, commitSha: string) {
+	return getJson<GitCommitResponse>(
+		token,
+		`https://api.github.com/repos/${repo.owner}/${repo.name}/git/commits/${commitSha}`
+	);
+}
+
+async function createTree(
+	token: string,
+	repo: RepoConfig,
+	baseTreeSha: string,
+	entries: { path: string; mode: '100644'; type: 'blob'; sha: string }[]
+) {
+	return postJson<{ sha: string }>(token, `https://api.github.com/repos/${repo.owner}/${repo.name}/git/trees`, {
+		base_tree: baseTreeSha,
+		tree: entries
+	});
+}
+
+async function createCommit(
+	token: string,
+	repo: RepoConfig,
+	message: string,
+	treeSha: string,
+	parentSha: string
+) {
+	return postJson<{ sha: string }>(token, `https://api.github.com/repos/${repo.owner}/${repo.name}/git/commits`, {
+		message,
+		tree: treeSha,
+		parents: [parentSha]
+	});
+}
+
+async function updateBranchHead(token: string, repo: RepoConfig, commitSha: string) {
+	return patchJson<GitRefResponse>(
+		token,
+		`https://api.github.com/repos/${repo.owner}/${repo.name}/git/ref/heads/${repo.branch}`,
+		{ sha: commitSha }
+	);
+}
+
+function buildPublishCandidates(snapshot: SiteSnapshot, pendingUploads: PublishUpload[]): PublishCandidate[] {
+	const serialized = serializeSnapshot(snapshot);
+
+	return [
+		{ path: 'content/site.json', content: serialized.site, encoding: 'utf-8' as const },
+		...serialized.pages.map((page) => ({ path: page.path, content: page.content, encoding: 'utf-8' as const })),
+		...serialized.posts.map((post) => ({ path: post.path, content: post.content, encoding: 'utf-8' as const })),
+		...serialized.events.map((event) => ({ path: event.path, content: event.content, encoding: 'utf-8' as const })),
+		...serialized.galleries.map((gallery) => ({
+			path: gallery.path,
+			content: gallery.content,
+			encoding: 'utf-8' as const
+		})),
+		...serialized.collections.map((collection) => ({
+			path: collection.path,
+			content: collection.content,
+			encoding: 'utf-8' as const
+		})),
+		...pendingUploads.map((upload) => ({
+			path: upload.path,
+			content: binaryToBase64(upload.bytes),
+			encoding: 'base64' as const
+		}))
+	];
+}
+
+async function filterChangedCandidates(token: string, repo: RepoConfig, candidates: PublishCandidate[]) {
+	const changed: PublishCandidate[] = [];
+
+	for (const candidate of candidates) {
+		const existing = await readRepoFile(token, repo, candidate.path);
+		const nextContent =
+			candidate.encoding === 'base64' ? decodeBase64Content(candidate.content) : candidate.content;
+
+		if (existing !== nextContent) {
+			changed.push(candidate);
+		}
+	}
+
+	return changed;
 }
 
 export function isFineGrainedPat(token: string) {
@@ -37,122 +243,42 @@ export async function validateToken(token: string, repo: RepoConfig) {
 	return response.json() as Promise<{ default_branch: string; html_url: string; full_name: string }>;
 }
 
-export async function getFileSha(token: string, repo: RepoConfig, filePath: string) {
-	const response = await fetch(
-		`https://api.github.com/repos/${repo.owner}/${repo.name}/contents/${filePath}?ref=${repo.branch}`,
-		{
-			headers: authHeaders(token)
-		}
-	);
-
-	if (response.status === 404) {
-		return undefined;
-	}
-
-	if (!response.ok) {
-		throw new Error(`Failed to read ${filePath} from GitHub.`);
-	}
-
-	const data = (await response.json()) as GithubFileResponse;
-	return data.sha;
-}
-
-export async function putTextFile(
-	token: string,
-	repo: RepoConfig,
-	filePath: string,
-	content: string,
-	message: string
-) {
-	const sha = await getFileSha(token, repo, filePath);
-	const body = {
-		message,
-		content: btoa(unescape(encodeURIComponent(content))),
-		branch: repo.branch,
-		...(sha ? { sha } : {})
-	};
-
-	const response = await fetch(`https://api.github.com/repos/${repo.owner}/${repo.name}/contents/${filePath}`, {
-		method: 'PUT',
-		headers: {
-			...authHeaders(token),
-			'Content-Type': 'application/json'
-		},
-		body: JSON.stringify(body)
-	});
-
-	if (!response.ok) {
-		throw new Error(`Failed to save ${filePath}.`);
-	}
-}
-
-export async function putBinaryFile(
-	token: string,
-	repo: RepoConfig,
-	filePath: string,
-	bytes: Uint8Array,
-	message: string
-) {
-	const sha = await getFileSha(token, repo, filePath);
-	const binary = Array.from(bytes, (byte) => String.fromCharCode(byte)).join('');
-	const body = {
-		message,
-		content: btoa(binary),
-		branch: repo.branch,
-		...(sha ? { sha } : {})
-	};
-
-	const response = await fetch(`https://api.github.com/repos/${repo.owner}/${repo.name}/contents/${filePath}`, {
-		method: 'PUT',
-		headers: {
-			...authHeaders(token),
-			'Content-Type': 'application/json'
-		},
-		body: JSON.stringify(body)
-	});
-
-	if (!response.ok) {
-		throw new Error(`Failed to upload ${filePath}.`);
-	}
-}
-
 export async function publishSnapshot(
 	token: string,
 	repo: RepoConfig,
 	snapshot: SiteSnapshot,
-	pendingUploads: { path: string; bytes: Uint8Array }[]
+	pendingUploads: PublishUpload[]
 ) {
-	const serialized = serializeSnapshot(snapshot);
+	const candidates = buildPublishCandidates(snapshot, pendingUploads);
+	const changedCandidates = await filterChangedCandidates(token, repo, candidates);
 
-	await putTextFile(token, repo, 'content/site.json', serialized.site, 'chore: update site settings');
-
-	for (const page of serialized.pages) {
-		await putTextFile(token, repo, page.path, page.content, `content: update page ${page.path}`);
+	if (!changedCandidates.length) {
+		return;
 	}
 
-	for (const post of serialized.posts) {
-		await putTextFile(token, repo, post.path, post.content, `content: update post ${post.path}`);
+	const head = await getBranchHead(token, repo);
+	const parentSha = head.object.sha;
+	const commit = await getCommit(token, repo, parentSha);
+
+	const treeEntries = [];
+	for (const candidate of changedCandidates) {
+		const blobSha = await createBlob(token, repo, candidate.content, candidate.encoding);
+		treeEntries.push({
+			path: candidate.path,
+			mode: '100644' as const,
+			type: 'blob' as const,
+			sha: blobSha
+		});
 	}
 
-	for (const event of serialized.events) {
-		await putTextFile(token, repo, event.path, event.content, `content: update event ${event.path}`);
-	}
+	const tree = await createTree(token, repo, commit.tree.sha, treeEntries);
+	const nextCommit = await createCommit(
+		token,
+		repo,
+		`content: publish ${changedCandidates.length} update${changedCandidates.length === 1 ? '' : 's'}`,
+		tree.sha,
+		parentSha
+	);
 
-	for (const gallery of serialized.galleries) {
-		await putTextFile(token, repo, gallery.path, gallery.content, `content: update gallery ${gallery.path}`);
-	}
-
-	for (const collection of serialized.collections) {
-		await putTextFile(
-			token,
-			repo,
-			collection.path,
-			collection.content,
-			`content: update collection ${collection.path}`
-		);
-	}
-
-	for (const upload of pendingUploads) {
-		await putBinaryFile(token, repo, upload.path, upload.bytes, `media: upload ${upload.path}`);
-	}
+	await updateBranchHead(token, repo, nextCommit.sha);
 }
