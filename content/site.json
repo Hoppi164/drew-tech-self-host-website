@@ -9,8 +9,8 @@
 		"logoText": "Northwind"
 	},
 	"repo": {
-		"owner": "YOUR_GITHUB_USERNAME",
-		"name": "YOUR_REPOSITORY_NAME",
+		"owner": "Drew Hopkins",
+		"name": "drew-tech-self-host-website",
 		"branch": "main",
 		"basePath": ""
 	},
