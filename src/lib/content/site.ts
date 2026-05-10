@@ -116,30 +116,53 @@ export function updateRenderedBody<T extends SitePage | SitePost | SiteEvent>(va
 	};
 }
 
+export function draftSourcePath(type: EditableEntityType, slug: string) {
+	switch (type) {
+		case 'page':
+			return `content/pages/${slug}.md`;
+		case 'post':
+			return `content/posts/${slug}.md`;
+		case 'event':
+			return `content/events/${slug}.md`;
+		case 'gallery':
+			return `content/galleries/${slug}.json`;
+		case 'collection':
+			return `content/collections/${slug}.json`;
+	}
+}
+
 export function insertDraftEntity(
 	snapshot: SiteSnapshot,
 	type: EditableEntityType,
-	entity: SitePage | SitePost | SiteEvent | SiteGallery | SiteCollection
+	entity: SitePage | SitePost | SiteEvent | SiteGallery | SiteCollection,
+	previous?: { slug?: string; sourcePath?: string }
 ) {
 	switch (type) {
 		case 'page':
-			return { ...snapshot, pages: replaceBySlug(snapshot.pages, entity as SitePage) };
+			return { ...snapshot, pages: replaceByIdentity(snapshot.pages, entity as SitePage, previous) };
 		case 'post':
-			return { ...snapshot, posts: replaceBySlug(snapshot.posts, entity as SitePost) };
+			return { ...snapshot, posts: replaceByIdentity(snapshot.posts, entity as SitePost, previous) };
 		case 'event':
-			return { ...snapshot, events: replaceBySlug(snapshot.events, entity as SiteEvent) };
+			return { ...snapshot, events: replaceByIdentity(snapshot.events, entity as SiteEvent, previous) };
 		case 'gallery':
-			return { ...snapshot, galleries: replaceBySlug(snapshot.galleries, entity as SiteGallery) };
+			return {
+				...snapshot,
+				galleries: replaceByIdentity(snapshot.galleries, entity as SiteGallery, previous)
+			};
 		case 'collection':
 			return {
 				...snapshot,
-				collections: replaceBySlug(snapshot.collections, entity as SiteCollection)
+				collections: replaceByIdentity(snapshot.collections, entity as SiteCollection, previous)
 			};
 	}
 }
 
-function replaceBySlug<T extends { slug: string }>(items: T[], next: T) {
-	const existingIndex = items.findIndex((item) => item.slug === next.slug);
+function replaceByIdentity<T extends { slug: string }>(
+	items: T[],
+	next: T,
+	previous?: { slug?: string; sourcePath?: string }
+) {
+	const existingIndex = items.findIndex((item) => matchesDraftIdentity(item, next, previous));
 	if (existingIndex === -1) {
 		return [...items, next];
 	}
@@ -147,4 +170,31 @@ function replaceBySlug<T extends { slug: string }>(items: T[], next: T) {
 	const clone = [...items];
 	clone[existingIndex] = next;
 	return clone;
+}
+
+function matchesDraftIdentity<T extends { slug: string }>(
+	current: T,
+	next: T,
+	previous?: { slug?: string; sourcePath?: string }
+) {
+	if (previous?.sourcePath && getSourcePath(current) === previous.sourcePath) {
+		return true;
+	}
+
+	if (previous?.slug && current.slug === previous.slug) {
+		return true;
+	}
+
+	const currentPath = getSourcePath(current);
+	const nextPath = getSourcePath(next);
+	return currentPath && nextPath ? currentPath === nextPath : current.slug === next.slug;
+}
+
+function getSourcePath(value: unknown) {
+	return typeof value === 'object' &&
+		value !== null &&
+		'sourcePath' in value &&
+		typeof value.sourcePath === 'string'
+		? value.sourcePath
+		: undefined;
 }

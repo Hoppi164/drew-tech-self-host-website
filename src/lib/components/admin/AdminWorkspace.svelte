@@ -6,7 +6,7 @@
 	import AccordionPanel from '$lib/components/admin/AccordionPanel.svelte';
 	import InfoMarker from '$lib/components/admin/InfoMarker.svelte';
 	import SnapshotPreview from '$lib/components/preview/SnapshotPreview.svelte';
-	import { insertDraftEntity, updateRenderedBody } from '$lib/content/site';
+	import { draftSourcePath, insertDraftEntity, updateRenderedBody } from '$lib/content/site';
 	import { isFineGrainedPat, publishSnapshot, validateToken } from '$lib/github/api';
 	import { adminSelection, adminSnapshot, adminToken, pendingUploads } from '$lib/stores/admin';
 	import {
@@ -176,6 +176,19 @@
 	) {
 		const next = { ...entity, [field]: value } as SitePage | SitePost | SiteEvent;
 		upsertEntity(type, updateRenderedBody(next));
+	}
+
+	function updatePageSlug(entity: SitePage, slug: string) {
+		const next = updateRenderedBody({
+			...entity,
+			slug,
+			sourcePath: draftSourcePath('page', slug)
+		});
+		draftSnapshot = insertDraftEntity(draftSnapshot, 'page', next, {
+			slug: entity.slug,
+			sourcePath: entity.sourcePath
+		});
+		choose('page', slug);
 	}
 
 	function updateGallery(field: keyof SiteGallery, value: string | undefined) {
@@ -399,7 +412,7 @@
 						<div class="panel">
 							<h3>Page Editor</h3>
 							<label>Title <input value={selectedPage.title} oninput={(event) => updateBody('page', selectedPage, 'title', (event.currentTarget as HTMLInputElement).value)} /></label>
-							<label>Slug <input value={selectedPage.slug} oninput={(event) => updateBody('page', selectedPage, 'slug', (event.currentTarget as HTMLInputElement).value)} /></label>
+							<label>Slug <input value={selectedPage.slug} oninput={(event) => updatePageSlug(selectedPage, (event.currentTarget as HTMLInputElement).value)} /></label>
 							<label>Excerpt <textarea oninput={(event) => updateBody('page', selectedPage, 'excerpt', (event.currentTarget as HTMLTextAreaElement).value)}>{selectedPage.excerpt}</textarea></label>
 							<label>Page Theme
 								<select value={selectedPage.theme ?? ''} onchange={(event) => updateBody('page', selectedPage, 'theme', themeValueFromInput((event.currentTarget as HTMLSelectElement).value))}>
@@ -608,7 +621,6 @@
 	.sidebar-copy,
 	.status-inline,
 	.preview-card-head p,
-	small,
 	.setup-help p,
 	.login-copy p {
 		color: #617086;

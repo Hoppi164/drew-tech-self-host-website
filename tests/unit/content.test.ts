@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+	draftSourcePath,
 	insertDraftEntity,
 	resolveThemeKey,
 	serializeSnapshot,
@@ -108,6 +109,31 @@ describe('content helpers', () => {
 
 		expect(next.pages).toHaveLength(1);
 		expect(next.pages[0].slug).toBe('page');
+	});
+
+	it('replaces a draft page when its slug changes', () => {
+		const first = insertDraftEntity(snapshot, 'page', {
+			title: 'Page',
+			slug: 'new-page',
+			excerpt: 'Excerpt',
+			featuredImage: '',
+			body: 'Body',
+			html: '<p>Body</p>',
+			sourcePath: draftSourcePath('page', 'new-page')
+		});
+
+		const next = insertDraftEntity(first, 'page', {
+			...first.pages[0],
+			slug: 'contact',
+			sourcePath: draftSourcePath('page', 'contact')
+		}, {
+			slug: first.pages[0].slug,
+			sourcePath: first.pages[0].sourcePath
+		});
+
+		expect(next.pages).toHaveLength(1);
+		expect(next.pages[0].slug).toBe('contact');
+		expect(next.pages[0].sourcePath).toBe('content/pages/contact.md');
 	});
 
 	it('serializes a proxied snapshot for publishing', () => {
