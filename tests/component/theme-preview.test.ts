@@ -147,7 +147,7 @@ describe('Admin theme preview', () => {
 
 	it('updates the live preview styles when a page theme override changes', async () => {
 		const { container } = await renderUnlockedWorkspace(snapshot);
-		await fireEvent.click(screen.getByRole('button', { name: 'About about' }));
+		await fireEvent.click(screen.getByRole('button', { name: 'About' }));
 
 		await screen.findByRole('heading', { name: 'about' });
 

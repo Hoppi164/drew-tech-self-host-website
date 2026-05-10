@@ -75,11 +75,6 @@
 
 	const navGroups = $derived([
 		{
-			label: 'Site',
-			items: [{ type: 'site' as const, slug: 'site', title: 'Brand, theme, and homepage' }],
-			create: undefined
-		},
-		{
 			label: 'Pages',
 			items: draftSnapshot.pages.map((page) => ({ type: 'page' as const, slug: page.slug, title: page.title })),
 			create: 'page' as const
@@ -299,7 +294,10 @@
 					<p class="eyebrow">CMS</p>
 					<h1>Content Studio</h1>
 				</div>
-				<button class="ghost small" onclick={lockAdmin} type="button">Log Out</button>
+				<button class="ghost small logout-button" onclick={lockAdmin} type="button">
+					<span>Log Out</span>
+					<span aria-hidden="true">↗</span>
+				</button>
 			</div>
 
 			<p class="sidebar-copy">
@@ -307,15 +305,28 @@
 			</p>
 
 			<nav class="nav-list" aria-label="CMS sections">
+				<button
+					aria-label="Site Settings"
+					class:active={isActive('site', 'site')}
+					class="nav-root-item"
+					onclick={() => choose('site', 'site')}
+					type="button"
+				>
+					<span>Site Settings</span>
+					<small>global</small>
+				</button>
+
 				{#each navGroups as group}
 					<section class="nav-group">
 						<div class="nav-group-head">
 							<div>
 								<h2>{group.label}</h2>
-								<span>{group.items.length} item{group.items.length === 1 ? '' : 's'}</span>
 							</div>
 							{#if group.create}
-								<button class="ghost small" onclick={() => createEntity(group.create)} type="button">New</button>
+								<button class="ghost nav-new" onclick={() => createEntity(group.create)} type="button" aria-label={`Create new ${group.label.slice(0, -1).toLowerCase()}`}>
+									<span>New</span>
+									<span aria-hidden="true">+</span>
+								</button>
 							{/if}
 						</div>
 						<div class="nav-items">
@@ -323,11 +334,11 @@
 								<button
 									class:active={isActive(item.type, item.slug)}
 									class="nav-item"
+									aria-label={item.title}
 									onclick={() => choose(item.type, item.slug)}
 									type="button"
 								>
 									<span>{item.title}</span>
-									<small>{item.slug}</small>
 								</button>
 							{/each}
 						</div>
@@ -571,7 +582,6 @@
 	.sidebar-copy,
 	.status-inline,
 	.preview-card-head p,
-	.nav-group-head span,
 	small,
 	.setup-help p,
 	.login-copy p {
@@ -580,51 +590,77 @@
 
 	.nav-list {
 		display: grid;
-		gap: 1rem;
+		gap: 0.9rem;
 		margin-top: 1.2rem;
 	}
 
+	.nav-root-item,
+	.nav-item {
+		display: flex;
+		align-items: center;
+		justify-content: flex-start;
+		gap: 0.8rem;
+		width: 100%;
+		text-align: left;
+		color: #243244;
+	}
+
+	.nav-root-item {
+		padding: 0.85rem 0.25rem 0.85rem 0.85rem;
+		border: 1px solid transparent;
+		border-radius: 14px;
+		background: transparent;
+		border-left: 3px solid #cbd5e4;
+	}
+
+	.nav-root-item.active,
+	.nav-item.active {
+		background: rgba(232, 240, 255, 0.9);
+		border-color: #b2caf8;
+		box-shadow: inset 0 0 0 1px rgba(61, 110, 204, 0.08);
+	}
+
+	.nav-root-item.active {
+		border-left-color: #4d72ae;
+	}
+
 	.nav-group {
-		background: white;
-		border: 1px solid #d9deea;
-		border-radius: 22px;
-		padding: 0.85rem;
-		box-shadow: 0 14px 30px rgba(22, 38, 59, 0.05);
+		padding-left: 0.35rem;
+		border-left: 1px solid #d9deea;
 	}
 
 	.nav-group-head {
 		display: flex;
 		justify-content: space-between;
-		align-items: start;
+		align-items: center;
 		gap: 0.75rem;
-		margin-bottom: 0.7rem;
+		margin-bottom: 0.45rem;
+		padding-left: 0.5rem;
 	}
 
 	.nav-group h2 {
 		margin: 0;
-		font-size: 1rem;
+		font-size: 0.92rem;
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
+		color: #5d6f8a;
 	}
 
 	.nav-items {
 		display: grid;
-		gap: 0.45rem;
+		gap: 0.2rem;
 	}
 
 	.nav-item {
-		display: grid;
-		gap: 0.15rem;
-		text-align: left;
-		padding: 0.8rem 0.9rem;
+		padding: 0.7rem 0.25rem 0.7rem 0.85rem;
 		border: 1px solid transparent;
-		border-radius: 16px;
-		background: #f7f9fc;
-		color: #243244;
+		border-radius: 14px;
+		background: transparent;
+		border-left: 3px solid transparent;
 	}
 
 	.nav-item.active {
-		background: #e8f0ff;
-		border-color: #b2caf8;
-		box-shadow: inset 0 0 0 1px rgba(61, 110, 204, 0.08);
+		border-left-color: #4d72ae;
 	}
 
 	.workspace {
@@ -720,8 +756,31 @@
 	}
 
 	button.small {
-		padding: 0.5rem 0.8rem;
-		font-size: 0.92rem;
+		padding: 0.42rem 0.72rem;
+		font-size: 0.84rem;
+		white-space: nowrap;
+	}
+
+	button.logout-button {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.35rem;
+	}
+
+	button.nav-new {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.28rem;
+		padding: 0.34rem 0.56rem;
+		font-size: 0.8rem;
+		line-height: 1;
+	}
+
+	button.nav-new span:first-child {
+		font-size: 0.98rem;
+		font-weight: 600;
+		line-height: 1;
 	}
 
 	.upload-block {
