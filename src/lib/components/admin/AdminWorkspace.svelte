@@ -3,6 +3,8 @@
 	import { base } from '$app/paths';
 	import { untrack } from 'svelte';
 	import { get } from 'svelte/store';
+	import AccordionPanel from '$lib/components/admin/AccordionPanel.svelte';
+	import InfoMarker from '$lib/components/admin/InfoMarker.svelte';
 	import SnapshotPreview from '$lib/components/preview/SnapshotPreview.svelte';
 	import { insertDraftEntity, updateRenderedBody } from '$lib/content/site';
 	import { isFineGrainedPat, publishSnapshot, validateToken } from '$lib/github/api';
@@ -251,39 +253,51 @@
 	<section class="login-screen">
 		<div class="login-card">
 			<div class="login-copy">
-				<p class="eyebrow">Admin Login</p>
-				<h1>Unlock the CMS with your GitHub token</h1>
+				<h1 class="login-title">Admin Login</h1>
 				<p>
-					This admin area stays private by requiring a fine-grained GitHub personal access token
-					with access to this repository. The token never leaves your browser except when writing to
-					GitHub’s API.
+					Use a GitHub personal access token for this repository to sign in and publish site
+					changes. The token stays in this browser tab and is only used for GitHub API requests.
 				</p>
 			</div>
 
 			<label>
-				Fine-grained GitHub PAT
-				<input bind:value={token} placeholder="github_pat_..." type="password" />
+				<span class="field-label">
+					Github PAT
+					<InfoMarker href={githubLinks.token} label="What is a GitHub PAT?">
+						{#snippet children()}
+							A personal access token is a GitHub-generated credential that lets this admin screen
+							save content changes back to your repository without a separate backend.
+						{/snippet}
+					</InfoMarker>
+				</span>
+				<input aria-label="Github PAT" bind:value={token} placeholder="github_pat_..." type="password" />
 			</label>
-			<button class="primary" onclick={unlock} type="button">Log In to CMS</button>
+			<button class="primary login-button" onclick={unlock} type="button">
+				<span>Log In to CMS</span>
+				<span aria-hidden="true">↗</span>
+			</button>
 
 			<div class="status">
 				{#if status}<p>{status}</p>{/if}
 				{#if error}<p class="error">{error}</p>{/if}
 			</div>
 
-			<div class="setup-help">
-				<h2>First time setting this up?</h2>
-				<ol>
-					<li><a href={githubLinks.repo} target="_blank" rel="noreferrer">Open this repository</a></li>
-					<li><a href={githubLinks.actions} target="_blank" rel="noreferrer">Enable GitHub Actions</a></li>
-					<li><a href={githubLinks.pages} target="_blank" rel="noreferrer">Enable GitHub Pages deployment</a></li>
-					<li><a href={githubLinks.token} target="_blank" rel="noreferrer">Create a fine-grained PAT</a></li>
-				</ol>
-				<p>
-					When creating the token, choose `Only select repositories`, pick this repo, and
-					grant `Contents: write` plus `Metadata: read`.
-				</p>
-			</div>
+			<AccordionPanel summary="First time setting this up?">
+				{#snippet children()}
+					<div class="setup-help">
+						<ol>
+							<li><a href={githubLinks.repo} target="_blank" rel="noreferrer">Open this repository</a></li>
+							<li><a href={githubLinks.actions} target="_blank" rel="noreferrer">Enable GitHub Actions</a></li>
+							<li><a href={githubLinks.pages} target="_blank" rel="noreferrer">Enable GitHub Pages deployment</a></li>
+							<li><a href={githubLinks.token} target="_blank" rel="noreferrer">Create a fine-grained PAT</a></li>
+						</ol>
+						<p>
+							When creating the token, choose `Only select repositories`, pick this repo, and
+							grant `Contents: write` plus `Metadata: read`.
+						</p>
+					</div>
+				{/snippet}
+			</AccordionPanel>
 		</div>
 	</section>
 {:else}
@@ -511,17 +525,31 @@
 		box-shadow: 0 30px 80px rgba(25, 39, 58, 0.12);
 	}
 
-	.login-copy h1,
 	.sidebar-head h1,
 	.workspace-head h2,
-	.panel h3,
-	.setup-help h2 {
+	.panel h3 {
 		margin: 0;
 		font-family: Georgia, serif;
 	}
 
 	.login-copy {
 		margin-bottom: 1rem;
+	}
+
+	.login-title {
+		font-family: Georgia, serif;
+		font-size: clamp(1.2rem, 2.1vw, 1.65rem);
+		letter-spacing: 0.02em;
+		text-transform: none;
+		color: #11161d;
+		line-height: 1.05;
+		margin: 0 0 0.75rem;
+	}
+
+	.field-label {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.45rem;
 	}
 
 	.eyebrow {
@@ -533,12 +561,11 @@
 	}
 
 	.setup-help {
-		margin-top: 1.5rem;
-		padding-top: 1.5rem;
-		border-top: 1px solid #d9deea;
+		color: #425267;
 	}
 
 	.setup-help ol {
+		margin: 0;
 		padding-left: 1.2rem;
 		line-height: 1.8;
 	}
@@ -747,6 +774,13 @@
 	button.primary {
 		background: #1f3046;
 		color: white;
+	}
+
+	button.login-button {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.45rem;
 	}
 
 	button.ghost {

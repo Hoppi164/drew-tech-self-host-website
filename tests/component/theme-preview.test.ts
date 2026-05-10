@@ -95,7 +95,7 @@ async function renderUnlockedWorkspace(initialSnapshot: SiteSnapshot) {
 		initialSnapshot: JSON.parse(JSON.stringify(initialSnapshot))
 	});
 
-	await fireEvent.input(screen.getByLabelText('Fine-grained GitHub PAT'), {
+	await fireEvent.input(screen.getByLabelText('Github PAT'), {
 		target: { value: 'github_pat_test_token' }
 	});
 	await fireEvent.click(screen.getByRole('button', { name: 'Log In to CMS' }));
