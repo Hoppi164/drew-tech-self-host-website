@@ -2,10 +2,10 @@
   "title": "Atelier Highlights",
   "slug": "atelier-highlights",
   "excerpt": "A gallery document with image metadata and supporting copy.",
-  "kind": "gallery",
-  "collectionSlug": "image-galleries",
   "featuredImage": "/uploads/artist-studio.svg",
   "body": "Use gallery entries for portfolios, project albums, before-and-after showcases, or seasonal inspiration boards.",
+  "kind": "gallery",
+  "collectionSlug": "image-galleries",
   "images": [
     {
       "src": "/uploads/artist-studio.svg",

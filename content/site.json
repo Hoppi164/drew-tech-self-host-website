@@ -63,7 +63,7 @@
     "ctaUrl": "mailto:hello@example.com"
   },
   "theme": {
-    "global": "artist-loft"
+    "global": "gothic-white"
   },
   "enabledSections": {
     "collections": true
