@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { Eye, EyeClosed } from '@lucide/svelte';
+
 	type Props = {
 		label: string;
 		value: string;
@@ -19,14 +21,18 @@
 			value={value}
 			oninput={(event) => onInput((event.currentTarget as HTMLInputElement).value)}
 		/>
-		<label class="toggle" aria-label={toggleLabel}>
+		<label class="toggle" aria-label={toggleLabel} title={toggleLabel}>
 			<input
 				checked={checked}
 				onchange={(event) => onToggle((event.currentTarget as HTMLInputElement).checked)}
 				type="checkbox"
 			/>
-			<span class="track">
-				<span class="thumb"></span>
+			<span class="icon-wrap" aria-hidden="true">
+				{#if checked}
+					<Eye size={18} strokeWidth={1.9} />
+				{:else}
+					<EyeClosed size={18} strokeWidth={1.9} />
+				{/if}
 			</span>
 		</label>
 	</div>
@@ -44,7 +50,7 @@
 		display: grid;
 		grid-template-columns: minmax(0, 1fr) auto;
 		align-items: center;
-		gap: 0.85rem;
+		gap: 0;
 	}
 
 	input {
@@ -53,7 +59,9 @@
 
 	.control-row > input {
 		padding: 0.85rem 0.95rem;
-		border-radius: 16px;
+		min-height: 3.05rem;
+		border-radius: 16px 0 0 16px;
+		border-right: 0;
 		border: 1px solid #cfd8e7;
 		background: white;
 		color: #1c2430;
@@ -63,6 +71,7 @@
 		display: inline-flex;
 		align-items: center;
 		cursor: pointer;
+		color: #54657d;
 	}
 
 	.toggle input {
@@ -75,41 +84,41 @@
 		white-space: nowrap;
 	}
 
-	.track {
-		position: relative;
+	.icon-wrap {
 		display: inline-flex;
 		align-items: center;
-		inline-size: 2.8rem;
-		block-size: 1.65rem;
-		padding: 0.16rem;
-		border-radius: 999px;
-		background: #d2dbe9;
+		justify-content: center;
+		inline-size: 2.3rem;
+		block-size: 3.05rem;
+		border-radius: 0 16px 16px 0;
+		background: #233042;
 		border: 1px solid #bcc8da;
+		border-left: 0;
+		color: white;
 		transition:
 			background-color 180ms ease,
-			border-color 180ms ease;
+			border-color 180ms ease,
+			color 180ms ease,
+			transform 180ms ease;
 	}
 
-	.thumb {
-		inline-size: 1.1rem;
-		block-size: 1.1rem;
-		border-radius: 999px;
-		background: white;
-		box-shadow: 0 4px 10px rgba(35, 48, 66, 0.16);
-		transition: transform 180ms ease;
+	.toggle:hover .icon-wrap {
+		transform: translateY(-1px);
 	}
 
-	.toggle input:checked + .track {
-		background: #233042;
-		border-color: #233042;
+	.toggle input:checked + .icon-wrap {
+		background: #eef3f8;
+		border-color: #bcc8da;
+		color: #54657d;
 	}
 
-	.toggle input:checked + .track .thumb {
-		transform: translateX(1.08rem);
-	}
-
-	.toggle input:focus-visible + .track {
+	.toggle input:focus-visible + .icon-wrap {
 		outline: 2px solid #7aa2ff;
 		outline-offset: 2px;
+	}
+
+	.control-row:focus-within > input,
+	.control-row:focus-within .icon-wrap {
+		border-color: #7aa2ff;
 	}
 </style>
