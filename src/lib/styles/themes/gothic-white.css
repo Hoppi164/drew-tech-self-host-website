@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=EB+Garamond:wght@400;500;600;700&family=Manufacturing+Consent&display=swap');
+
 .theme-scope[data-theme='gothic-white'] {
 	--site-background: #f3f3f1;
 	--site-surface: #fcfcfb;
@@ -6,8 +8,8 @@
 	--site-accent: #2b2b2b;
 	--site-border: #bdbdb8;
 	--site-radius: 10px;
-	--site-heading-font: 'Old English Text MT', 'Blackletter', 'Cloister Black', 'Goudy Text MT', Georgia, serif;
-	--site-body-font: 'Book Antiqua', 'Palatino Linotype', 'Times New Roman', serif;
+	--site-heading-font: 'Manufacturing Consent', 'Old English Text MT', 'Blackletter', 'Cloister Black', serif;
+	--site-body-font: 'EB Garamond', 'Book Antiqua', 'Palatino Linotype', 'Times New Roman', serif;
 	--site-shadow: 0 18px 44px rgba(17, 17, 17, 0.08);
 	--site-hero-glow: radial-gradient(circle at top left, rgba(0, 0, 0, 0.08), transparent 36%);
 }
@@ -17,9 +19,24 @@
 }
 
 .theme-scope[data-theme='gothic-white'] .brand,
-.theme-scope[data-theme='gothic-white'] h1,
+.theme-scope[data-theme='gothic-white'] h1 {
+	font-family: 'Cinzel Decorative', Georgia, serif;
+	letter-spacing: 0.02em;
+}
+
+.theme-scope[data-theme='gothic-white'] .brand {
+	font-family: 'Manufacturing Consent', 'Old English Text MT', 'Blackletter', 'Cloister Black', serif;
+	letter-spacing: 0.02em;
+}
+
+.theme-scope[data-theme='gothic-white'] h1 {
+	font-size: clamp(1.65rem, 3.4vw, 2.55rem);
+}
+
 .theme-scope[data-theme='gothic-white'] h2,
-.theme-scope[data-theme='gothic-white'] h3 {
+.theme-scope[data-theme='gothic-white'] h3,
+.theme-scope[data-theme='gothic-white'] h4 {
+	font-family: 'Cinzel Decorative', Georgia, serif;
 	letter-spacing: 0.02em;
 }
 
@@ -36,4 +53,15 @@
 	background: var(--site-text);
 	color: var(--site-surface);
 	border: 1px solid var(--site-text);
+}
+
+.theme-scope[data-theme='gothic-white'] p,
+.theme-scope[data-theme='gothic-white'] li,
+.theme-scope[data-theme='gothic-white'] dd,
+.theme-scope[data-theme='gothic-white'] dt,
+.theme-scope[data-theme='gothic-white'] input,
+.theme-scope[data-theme='gothic-white'] textarea,
+.theme-scope[data-theme='gothic-white'] select,
+.theme-scope[data-theme='gothic-white'] button {
+	font-family: 'EB Garamond', 'Book Antiqua', 'Palatino Linotype', 'Times New Roman', serif;
 }
