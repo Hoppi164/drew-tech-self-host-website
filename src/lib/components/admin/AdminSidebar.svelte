@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { LogOut } from '@lucide/svelte';
 	import AccordionPanel from '$lib/components/admin/AccordionPanel.svelte';
 	import AdminNewButton from '$lib/components/admin/AdminNewButton.svelte';
 	import type { AdminViewType, CollectionGroup } from '$lib/components/admin/types';
@@ -149,7 +150,7 @@
 	<div class="sidebar-foot">
 		<button class="ghost small logout-button" onclick={onLogout} type="button">
 			Log Out
-			<span aria-hidden="true">↗</span>
+			<LogOut aria-hidden="true" size={16} strokeWidth={2} />
 		</button>
 	</div>
 </aside>

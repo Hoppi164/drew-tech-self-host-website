@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { LogIn } from '@lucide/svelte';
 	import AccordionPanel from '$lib/components/admin/AccordionPanel.svelte';
 	import InfoMarker from '$lib/components/admin/InfoMarker.svelte';
 	import type { GithubLinks } from '$lib/components/admin/types';
@@ -54,7 +55,7 @@
 
 		<button class="primary login-button" onclick={onSubmit} type="button">
 			Log In to CMS
-			<span aria-hidden="true">→</span>
+			<LogIn aria-hidden="true" size={16} strokeWidth={2} />
 		</button>
 
 		{#if error}<p class="status-inline error">{error}</p>{/if}
