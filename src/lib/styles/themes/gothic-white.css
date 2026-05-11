@@ -1,0 +1,39 @@
+.theme-scope[data-theme='gothic-white'] {
+	--site-background: #f3f3f1;
+	--site-surface: #fcfcfb;
+	--site-text: #111111;
+	--site-muted: #5f5f5f;
+	--site-accent: #2b2b2b;
+	--site-border: #bdbdb8;
+	--site-radius: 10px;
+	--site-heading-font: 'Old English Text MT', 'Blackletter', 'Cloister Black', 'Goudy Text MT', Georgia, serif;
+	--site-body-font: 'Book Antiqua', 'Palatino Linotype', 'Times New Roman', serif;
+	--site-shadow: 0 18px 44px rgba(17, 17, 17, 0.08);
+	--site-hero-glow: radial-gradient(circle at top left, rgba(0, 0, 0, 0.08), transparent 36%);
+}
+
+.theme-scope[data-theme='gothic-white'] .topbar {
+	border-bottom: 1px solid rgba(17, 17, 17, 0.12);
+}
+
+.theme-scope[data-theme='gothic-white'] .brand,
+.theme-scope[data-theme='gothic-white'] h1,
+.theme-scope[data-theme='gothic-white'] h2,
+.theme-scope[data-theme='gothic-white'] h3 {
+	letter-spacing: 0.02em;
+}
+
+.theme-scope[data-theme='gothic-white'] .card,
+.theme-scope[data-theme='gothic-white'] .article,
+.theme-scope[data-theme='gothic-white'] .panel,
+.theme-scope[data-theme='gothic-white'] figure,
+.theme-scope[data-theme='gothic-white'] .hero .copy {
+	box-shadow: var(--site-shadow);
+	border-color: color-mix(in srgb, var(--site-border) 82%, black 18%);
+}
+
+.theme-scope[data-theme='gothic-white'] .cta {
+	background: var(--site-text);
+	color: var(--site-surface);
+	border: 1px solid var(--site-text);
+}

@@ -4,7 +4,8 @@ export const themeKeys = [
 	'artisan-bloom',
 	'coastal-clarity',
 	'workshop-grid',
-	'midnight-press'
+	'midnight-press',
+	'gothic-white'
 ] as const;
 
 export type ThemeKey = (typeof themeKeys)[number];
@@ -59,6 +60,13 @@ export const themes: Record<ThemeKey, ThemeDefinition> = {
 		description: 'Dark editorial contrast suited to arts and events.',
 		heroAlign: 'start',
 		previewLabel: 'Dark editorial'
+	},
+	'gothic-white': {
+		key: 'gothic-white',
+		name: 'Gothic White',
+		description: 'Monochrome contrast with a dramatic gothic display feel.',
+		heroAlign: 'center',
+		previewLabel: 'Gothic monochrome'
 	}
 };
 
