@@ -14,7 +14,6 @@
 </script>
 
 <section class="collection-hero">
-	<p class="kicker">{collection.kind}</p>
 	<h1>{collection.title}</h1>
 	<p>{collection.description}</p>
 </section>
@@ -50,7 +49,7 @@
 		{/each}
 	</section>
 {:else}
-	<CardGrid title="Entries" items={entries} hrefResolver={resolveHref} />
+	<CardGrid title="" items={entries} hrefResolver={resolveHref} />
 {/if}
 
 <style>

@@ -17,9 +17,11 @@
 
 {#if items.length}
 	<section class="section">
-		<div class="section-head">
-			<h2>{title}</h2>
-		</div>
+		{#if title}
+			<div class="section-head">
+				<h2>{title}</h2>
+			</div>
+		{/if}
 		<div class="grid">
 			{#each items as item}
 				<article class="card">
