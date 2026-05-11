@@ -1,5 +1,4 @@
 <script lang="ts">
-	import ContactPanel from '$lib/components/site/ContactPanel.svelte';
 	import RichTextPage from '$lib/components/site/RichTextPage.svelte';
 	import SiteShell from '$lib/components/site/SiteShell.svelte';
 	import { getHomePage } from '$lib/content/site';
@@ -19,9 +18,7 @@
 	activePath="/"
 >
 	{#snippet children()}
-		{#if homePage?.slug === 'contact'}
-			<ContactPanel {...data.snapshot.site.contact} />
-		{:else if homePage}
+		{#if homePage}
 			<RichTextPage
 				title={homePage.title}
 				excerpt={homePage.excerpt}

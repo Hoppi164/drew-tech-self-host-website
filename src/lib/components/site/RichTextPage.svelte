@@ -40,8 +40,30 @@
 		margin: 0 0 1.5rem;
 	}
 
+	.prose :global(h2),
+	.prose :global(h3),
+	.prose :global(h4),
+	.prose :global(h5),
+	.prose :global(h6) {
+		font-family: var(--site-heading-font);
+	}
+
 	.prose :global(p) {
+		margin: 0 0 1rem;
 		line-height: 1.8;
 		color: var(--site-text);
+	}
+
+	.prose :global(h4),
+	.prose :global(h5),
+	.prose :global(h6) {
+		margin: 1rem 0 0.05rem;
+		line-height: 1.2;
+	}
+
+	.prose :global(h4 + p),
+	.prose :global(h5 + p),
+	.prose :global(h6 + p) {
+		margin-top: 0;
 	}
 </style>

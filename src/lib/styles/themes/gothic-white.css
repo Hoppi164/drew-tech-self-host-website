@@ -35,7 +35,9 @@
 
 .theme-scope[data-theme='gothic-white'] h2,
 .theme-scope[data-theme='gothic-white'] h3,
-.theme-scope[data-theme='gothic-white'] h4 {
+.theme-scope[data-theme='gothic-white'] h4,
+.theme-scope[data-theme='gothic-white'] h5,
+.theme-scope[data-theme='gothic-white'] h6 {
 	font-family: 'Cinzel Decorative', Georgia, serif;
 	letter-spacing: 0.02em;
 }

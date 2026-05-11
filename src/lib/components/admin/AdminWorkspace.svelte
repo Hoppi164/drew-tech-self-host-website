@@ -196,10 +196,6 @@
 		upsertEntity('page', next);
 	}
 
-	function updateContactField(field: keyof SiteSnapshot['site']['contact'], value: string) {
-		updateSiteField(`contact.${field}`, value);
-	}
-
 	function updatePageSlug(page: SitePage, slug: string) {
 		const { slug: nextSlug, snapshot } = renamePageSnapshot(draftSnapshot, page, slug);
 		draftSnapshot = snapshot;
@@ -374,7 +370,6 @@
 						onUpdateGalleryImage={updateGalleryImage}
 						onUpdateNavigationItem={updateNavigationItem}
 						onUpdatePageField={updatePageField}
-						onUpdateContactField={updateContactField}
 						onUpdatePageSlug={updatePageSlug}
 						onUpdateSiteField={updateSiteField}
 						onUploadImage={handleUpload}

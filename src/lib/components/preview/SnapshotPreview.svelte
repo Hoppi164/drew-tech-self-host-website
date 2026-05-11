@@ -2,7 +2,6 @@
 	import { cubicOut } from 'svelte/easing';
 	import { fade } from 'svelte/transition';
 	import CollectionPage from '$lib/components/site/CollectionPage.svelte';
-	import ContactPanel from '$lib/components/site/ContactPanel.svelte';
 	import EntryPage from '$lib/components/site/EntryPage.svelte';
 	import RichTextPage from '$lib/components/site/RichTextPage.svelte';
 	import SiteShell from '$lib/components/site/SiteShell.svelte';
@@ -119,9 +118,7 @@
 		>
 			{#snippet children()}
 				{#if type === 'site'}
-					{#if homePage?.slug === 'contact'}
-						<ContactPanel {...snapshot.site.contact} />
-					{:else if homePage}
+					{#if homePage}
 						<RichTextPage
 							title={homePage.title}
 							excerpt={homePage.excerpt}
@@ -130,16 +127,12 @@
 						/>
 					{/if}
 				{:else if type === 'page' && previewPage}
-					{#if previewPage.slug === 'contact'}
-						<ContactPanel {...snapshot.site.contact} />
-					{:else}
-						<RichTextPage
-							title={previewPage.title}
-							excerpt={previewPage.excerpt}
-							html={previewPage.html}
-							showTitle={previewPage.showTitle}
-						/>
-					{/if}
+					<RichTextPage
+						title={previewPage.title}
+						excerpt={previewPage.excerpt}
+						html={previewPage.html}
+						showTitle={previewPage.showTitle}
+					/>
 				{:else if type === 'collection' && previewCollection}
 					<CollectionPage collection={previewCollection} entries={getEntriesForCollection(snapshot, previewCollection.slug)} />
 				{:else if type === 'entry' && previewCollection && previewEntry}

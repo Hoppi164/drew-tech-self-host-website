@@ -1,6 +1,5 @@
 <script lang="ts">
 	import CollectionPage from '$lib/components/site/CollectionPage.svelte';
-	import ContactPanel from '$lib/components/site/ContactPanel.svelte';
 	import RichTextPage from '$lib/components/site/RichTextPage.svelte';
 	import SiteShell from '$lib/components/site/SiteShell.svelte';
 	import type { PageProps } from './$types';
@@ -18,16 +17,12 @@
 >
 	{#snippet children()}
 		{#if data.view === 'page'}
-			{#if data.page.slug === 'contact'}
-				<ContactPanel {...data.snapshot.site.contact} />
-			{:else}
-				<RichTextPage
-					title={data.page.title}
-					excerpt={data.page.excerpt}
-					html={data.page.html}
-					showTitle={data.page.showTitle}
-				/>
-			{/if}
+			<RichTextPage
+				title={data.page.title}
+				excerpt={data.page.excerpt}
+				html={data.page.html}
+				showTitle={data.page.showTitle}
+			/>
 		{:else}
 			<CollectionPage collection={data.collection} entries={data.entries} />
 		{/if}

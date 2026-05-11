@@ -6,6 +6,13 @@ featuredImage: /uploads/contact-desk.svg
 showTitle: true
 ---
 
-The v1 template keeps contact handling static-friendly. Use a simple email CTA, a third-party form endpoint, or a `mailto:` link until you decide to add a backend service later.
+Reach out with a quick note and include any useful context about your project, timeline, or goals.
 
-For many small businesses, speed and clarity matter more than complex infrastructure. The contact page should make it obvious how to get in touch and what happens next.
+##### Email
+[hello@example.com](mailto:hello@example.com)
+
+##### Phone
+[+61 7 5555 0110](tel:61755550110)
+
+##### Location
+Brisbane, Australia

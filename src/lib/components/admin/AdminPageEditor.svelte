@@ -1,21 +1,18 @@
 <script lang="ts">
 	import AdminInputToggleField from '$lib/components/admin/AdminInputToggleField.svelte';
 	import { onDestroy, untrack } from 'svelte';
-	import type { SiteConfig, SitePage } from '$lib/types/content';
+	import type { SitePage } from '$lib/types/content';
 	import { themeKeys, themes } from '$lib/types/theme';
 	import { createDebouncedCallback } from '$lib/utils/debounce';
 
 	type Props = {
 		page: SitePage;
-		contact: SiteConfig['contact'];
 		onUpdateField: <K extends keyof SitePage>(field: K, value: SitePage[K]) => void;
-		onUpdateContactField: (field: keyof SiteConfig['contact'], value: string) => void;
 		onUpdateSlug: (slug: string) => void;
 		onDelete: () => void;
 	};
 
-	let { page, contact, onUpdateField, onUpdateContactField, onUpdateSlug, onDelete }: Props =
-		$props();
+	let { page, onUpdateField, onUpdateSlug, onDelete }: Props = $props();
 	let slugDraft = $state(untrack(() => page.slug));
 	let committedSlug = $state(untrack(() => page.slug));
 
@@ -78,18 +75,6 @@
 			</select>
 		</label>
 		<label>Body <textarea class="body" oninput={(event) => onUpdateField('body', (event.currentTarget as HTMLTextAreaElement).value)}>{page.body}</textarea></label>
-		{#if page.slug === 'contact'}
-			<div class="contact-section">
-				<h4>Contact Panel</h4>
-				<label>Panel Title <input value={contact.title} oninput={(event) => onUpdateContactField('title', (event.currentTarget as HTMLInputElement).value)} /></label>
-				<label>Intro <textarea oninput={(event) => onUpdateContactField('intro', (event.currentTarget as HTMLTextAreaElement).value)}>{contact.intro}</textarea></label>
-				<label>Email <input type="email" value={contact.email} oninput={(event) => onUpdateContactField('email', (event.currentTarget as HTMLInputElement).value)} /></label>
-				<label>Phone <input value={contact.phone} oninput={(event) => onUpdateContactField('phone', (event.currentTarget as HTMLInputElement).value)} /></label>
-				<label>Address <textarea oninput={(event) => onUpdateContactField('address', (event.currentTarget as HTMLTextAreaElement).value)}>{contact.address}</textarea></label>
-				<label>CTA Label <input value={contact.ctaLabel} oninput={(event) => onUpdateContactField('ctaLabel', (event.currentTarget as HTMLInputElement).value)} /></label>
-				<label>CTA URL <input value={contact.ctaUrl} oninput={(event) => onUpdateContactField('ctaUrl', (event.currentTarget as HTMLInputElement).value)} /></label>
-			</div>
-		{/if}
 		<button class="danger" onclick={onDelete} type="button">Delete Page</button>
 	</div>
 </div>
@@ -119,18 +104,6 @@
 	}
 
 	.panel h3 {
-		margin: 0;
-		font-family: Georgia, serif;
-	}
-
-	.contact-section {
-		display: grid;
-		gap: 0.9rem;
-		padding-top: 1rem;
-		border-top: 1px solid #dce4f1;
-	}
-
-	.contact-section h4 {
 		margin: 0;
 		font-family: Georgia, serif;
 	}

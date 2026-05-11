@@ -24,10 +24,6 @@
 			field: K,
 			value: SitePage[K]
 		) => void;
-		onUpdateContactField: (
-			field: keyof SiteSnapshot['site']['contact'],
-			value: string
-		) => void;
 		onUpdatePageSlug: (page: SitePage, slug: string) => void;
 		onDeletePage: (page: SitePage) => void;
 		onUpdateCollectionField: <K extends keyof SiteCollection>(
@@ -59,7 +55,6 @@
 		onMoveNavigationItem,
 		onRemoveNavigationItem,
 		onUpdatePageField,
-		onUpdateContactField,
 		onUpdatePageSlug,
 		onDeletePage,
 		onUpdateCollectionField,
@@ -99,10 +94,8 @@
 			/>
 		{:else if activeType === 'page' && selectedPage}
 			<AdminPageEditor
-				contact={snapshot.site.contact}
 				page={selectedPage}
 				onDelete={() => onDeletePage(selectedPage)}
-				onUpdateContactField={onUpdateContactField}
 				onUpdateField={(field, value) => onUpdatePageField(selectedPage, field, value)}
 				onUpdateSlug={(slug) => onUpdatePageSlug(selectedPage, slug)}
 			/>
