@@ -3,6 +3,7 @@ title: Spring Launch Notes
 slug: spring-launch
 excerpt: A sample journal entry for launch updates or announcements.
 featuredImage: /uploads/artist-studio.svg
+showTitle: true
 kind: article
 collectionSlug: blog-posts
 tags: ["launch","notes"]

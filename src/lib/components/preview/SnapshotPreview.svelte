@@ -122,13 +122,23 @@
 					{#if homePage?.slug === 'contact'}
 						<ContactPanel {...snapshot.site.contact} />
 					{:else if homePage}
-						<RichTextPage title={homePage.title} excerpt={homePage.excerpt} html={homePage.html} />
+						<RichTextPage
+							title={homePage.title}
+							excerpt={homePage.excerpt}
+							html={homePage.html}
+							showTitle={homePage.showTitle}
+						/>
 					{/if}
 				{:else if type === 'page' && previewPage}
 					{#if previewPage.slug === 'contact'}
 						<ContactPanel {...snapshot.site.contact} />
 					{:else}
-						<RichTextPage title={previewPage.title} excerpt={previewPage.excerpt} html={previewPage.html} />
+						<RichTextPage
+							title={previewPage.title}
+							excerpt={previewPage.excerpt}
+							html={previewPage.html}
+							showTitle={previewPage.showTitle}
+						/>
 					{/if}
 				{:else if type === 'collection' && previewCollection}
 					<CollectionPage collection={previewCollection} entries={getEntriesForCollection(snapshot, previewCollection.slug)} />

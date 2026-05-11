@@ -10,6 +10,7 @@ const pages: SitePage[] = [
 		slug: 'about',
 		excerpt: 'About excerpt',
 		featuredImage: '',
+		showTitle: true,
 		body: 'About body',
 		html: '<p>About body</p>',
 		sourcePath: 'content/pages/about.md'
@@ -20,6 +21,7 @@ const collection: SiteCollection = {
 	title: 'Journal',
 	slug: 'blog-posts',
 	description: 'Articles',
+	showTitle: true,
 	theme: undefined,
 	kind: 'article',
 	routeBase: 'journal',
@@ -42,6 +44,7 @@ const collectionGroups: CollectionGroup[] = [
 				slug: 'first-post',
 				excerpt: 'Excerpt',
 				featuredImage: '',
+				showTitle: true,
 				theme: undefined,
 				body: 'Body',
 				html: '<p>Body</p>',

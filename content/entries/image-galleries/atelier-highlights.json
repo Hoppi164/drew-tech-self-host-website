@@ -3,6 +3,7 @@
   "slug": "atelier-highlights",
   "excerpt": "A gallery document with image metadata and supporting copy.",
   "featuredImage": "/uploads/artist-studio.svg",
+  "showTitle": true,
   "body": "Use gallery entries for portfolios, project albums, before-and-after showcases, or seasonal inspiration boards.",
   "kind": "gallery",
   "collectionSlug": "image-galleries",

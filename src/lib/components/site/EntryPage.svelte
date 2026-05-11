@@ -21,7 +21,9 @@
 				<span> · {entry.location}</span>
 			{/if}
 		</p>
-		<h1>{entry.title}</h1>
+		{#if entry.showTitle}
+			<h1>{entry.title}</h1>
+		{/if}
 		{#if collection.showExcerpt}
 			<p class="excerpt">{entry.excerpt}</p>
 		{/if}

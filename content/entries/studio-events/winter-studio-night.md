@@ -3,6 +3,7 @@ title: Winter Studio Night
 slug: winter-studio-night
 excerpt: An example event entry for exhibitions, classes, or seasonal sales.
 featuredImage: /uploads/artist-studio.svg
+showTitle: true
 kind: event
 collectionSlug: studio-events
 date: 2026-06-21

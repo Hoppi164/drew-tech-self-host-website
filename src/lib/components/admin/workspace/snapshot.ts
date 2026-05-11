@@ -249,6 +249,7 @@ export function changeCollectionKindSnapshot(
 			slug: entry.slug,
 			excerpt: entry.excerpt,
 			featuredImage: entry.featuredImage,
+			showTitle: entry.showTitle,
 			theme: entry.theme,
 			body: entry.body,
 			html: entry.html,

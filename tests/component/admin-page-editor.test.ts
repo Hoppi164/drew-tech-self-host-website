@@ -8,6 +8,7 @@ const page: SitePage = {
 	slug: 'contact',
 	excerpt: 'Get in touch',
 	featuredImage: '',
+	showTitle: true,
 	theme: undefined,
 	body: 'Contact body',
 	html: '<p>Contact body</p>',
@@ -27,17 +28,20 @@ const contact: SiteConfig['contact'] = {
 describe('AdminPageEditor', () => {
 	it('shows and updates contact panel fields for the contact page', async () => {
 		const onUpdateContactField = vi.fn();
+		const onUpdateField = vi.fn();
 
 		render(AdminPageEditor, {
 			page,
 			contact,
-			onUpdateField: vi.fn(),
+			onUpdateField,
 			onUpdateContactField,
 			onUpdateSlug: vi.fn(),
 			onDelete: vi.fn()
 		});
 
 		expect(screen.getByText('Contact Panel')).toBeTruthy();
+		await fireEvent.click(screen.getByLabelText('Show page title'));
+		expect(onUpdateField).toHaveBeenCalledWith('showTitle', false);
 
 		await fireEvent.input(screen.getByLabelText('Panel Title'), {
 			currentTarget: { value: 'Talk to the team' },

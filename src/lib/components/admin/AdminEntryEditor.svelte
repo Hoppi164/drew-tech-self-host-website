@@ -1,4 +1,5 @@
 <script lang="ts">
+	import AdminInputToggleField from '$lib/components/admin/AdminInputToggleField.svelte';
 	import { onDestroy, untrack } from 'svelte';
 	import type { UploadMeta } from '$lib/components/admin/types';
 	import type { ImageAsset, SiteCollection, SiteEntry, SiteGalleryEntry } from '$lib/types/content';
@@ -96,7 +97,14 @@
 <div class="panel">
 	<div class="panel-scroll">
 		<h3>{collection.kind === 'gallery' ? 'Gallery Entry' : collection.kind === 'event' ? 'Event Entry' : 'Article Entry'}</h3>
-		<label>Title <input value={entry.title} oninput={(event) => onUpdateField({ title: (event.currentTarget as HTMLInputElement).value })} /></label>
+		<AdminInputToggleField
+			checked={entry.showTitle}
+			label="Title"
+			toggleLabel="Show entry title"
+			value={entry.title}
+			onInput={(value) => onUpdateField({ title: value })}
+			onToggle={(checked) => onUpdateField({ showTitle: checked })}
+		/>
 		<label>Slug <input onblur={flushSlugCommit} oninput={handleSlugInput} value={slugDraft} /></label>
 		<label>Excerpt <textarea oninput={(event) => onUpdateField({ excerpt: (event.currentTarget as HTMLTextAreaElement).value })}>{entry.excerpt}</textarea></label>
 		<label>Featured Image <input value={entry.featuredImage} oninput={(event) => onUpdateField({ featuredImage: (event.currentTarget as HTMLInputElement).value })} /></label>

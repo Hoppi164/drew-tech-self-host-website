@@ -56,6 +56,7 @@ const snapshot: SiteSnapshot = {
 			slug: 'about',
 			excerpt: 'About excerpt',
 			featuredImage: '',
+			showTitle: true,
 			body: 'About body',
 			html: '<p>About body</p>',
 			sourcePath: 'content/pages/about.md'
@@ -66,6 +67,7 @@ const snapshot: SiteSnapshot = {
 			title: 'Journal',
 			slug: 'blog-posts',
 			description: 'Desc',
+			showTitle: true,
 			kind: 'article',
 			routeBase: 'journal',
 			layout: 'cards',
@@ -113,6 +115,7 @@ describe('content helpers', () => {
 			slug: 'page',
 			excerpt: 'Excerpt',
 			featuredImage: '',
+			showTitle: true,
 			body: 'Hello **world**',
 			html: '',
 			sourcePath: 'content/pages/page.md'
@@ -127,6 +130,7 @@ describe('content helpers', () => {
 			slug: 'page',
 			excerpt: 'Excerpt',
 			featuredImage: '',
+			showTitle: true,
 			body: 'Body',
 			html: '<p>Body</p>',
 			sourcePath: 'content/pages/page.md'
@@ -142,6 +146,7 @@ describe('content helpers', () => {
 			slug: 'new-page',
 			excerpt: 'Excerpt',
 			featuredImage: '',
+			showTitle: true,
 			body: 'Body',
 			html: '<p>Body</p>',
 			sourcePath: draftSourcePath('page', 'new-page')
@@ -180,6 +185,7 @@ describe('content helpers', () => {
 						slug: 'gallery',
 						excerpt: 'Gallery description',
 						featuredImage: '/uploads/cover.jpg',
+						showTitle: true,
 						theme: 'artist-loft',
 						body: 'Gallery body',
 						html: '<p>Gallery body</p>',

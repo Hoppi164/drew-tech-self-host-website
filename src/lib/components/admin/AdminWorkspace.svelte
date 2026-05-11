@@ -191,7 +191,7 @@
 		error = next.error;
 	}
 
-	function updatePageField(page: SitePage, field: keyof SitePage, value: string | undefined) {
+	function updatePageField<K extends keyof SitePage>(page: SitePage, field: K, value: SitePage[K]) {
 		const next = updateRenderedBody({ ...page, [field]: value });
 		upsertEntity('page', next);
 	}

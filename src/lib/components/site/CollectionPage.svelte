@@ -14,7 +14,9 @@
 </script>
 
 <section class="collection-hero">
-	<h1>{collection.title}</h1>
+	{#if collection.showTitle}
+		<h1>{collection.title}</h1>
+	{/if}
 	<p>{collection.description}</p>
 </section>
 
@@ -57,7 +59,6 @@
 		padding: 1.5rem 0;
 	}
 
-	.kicker,
 	.meta {
 		color: var(--site-muted);
 		text-transform: uppercase;

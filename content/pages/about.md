@@ -3,6 +3,7 @@ title: About
 slug: about
 excerpt: A flexible story page for any small business.
 featuredImage: /uploads/artist-studio.svg
+showTitle: true
 ---
 
 Northwind Studio is a demonstration business for this template. The page is intentionally written in a tone that could be adapted to an artist, a florist, a gardener, or a service-based local business.

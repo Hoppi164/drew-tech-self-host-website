@@ -21,7 +21,12 @@
 			{#if data.page.slug === 'contact'}
 				<ContactPanel {...data.snapshot.site.contact} />
 			{:else}
-				<RichTextPage title={data.page.title} excerpt={data.page.excerpt} html={data.page.html} />
+				<RichTextPage
+					title={data.page.title}
+					excerpt={data.page.excerpt}
+					html={data.page.html}
+					showTitle={data.page.showTitle}
+				/>
 			{/if}
 		{:else}
 			<CollectionPage collection={data.collection} entries={data.entries} />

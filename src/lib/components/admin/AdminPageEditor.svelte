@@ -1,4 +1,5 @@
 <script lang="ts">
+	import AdminInputToggleField from '$lib/components/admin/AdminInputToggleField.svelte';
 	import { onDestroy, untrack } from 'svelte';
 	import type { SiteConfig, SitePage } from '$lib/types/content';
 	import { themeKeys, themes } from '$lib/types/theme';
@@ -7,7 +8,7 @@
 	type Props = {
 		page: SitePage;
 		contact: SiteConfig['contact'];
-		onUpdateField: (field: keyof SitePage, value: string | undefined) => void;
+		onUpdateField: <K extends keyof SitePage>(field: K, value: SitePage[K]) => void;
 		onUpdateContactField: (field: keyof SiteConfig['contact'], value: string) => void;
 		onUpdateSlug: (slug: string) => void;
 		onDelete: () => void;
@@ -58,7 +59,14 @@
 <div class="panel">
 	<div class="panel-scroll">
 		<h3>Page Editor</h3>
-		<label>Title <input value={page.title} oninput={(event) => onUpdateField('title', (event.currentTarget as HTMLInputElement).value)} /></label>
+		<AdminInputToggleField
+			checked={page.showTitle}
+			label="Title"
+			toggleLabel="Show page title"
+			value={page.title}
+			onInput={(value) => onUpdateField('title', value)}
+			onToggle={(checked) => onUpdateField('showTitle', checked)}
+		/>
 		<label>Slug <input onblur={flushSlugCommit} oninput={handleSlugInput} value={slugDraft} /></label>
 		<label>Excerpt <textarea oninput={(event) => onUpdateField('excerpt', (event.currentTarget as HTMLTextAreaElement).value)}>{page.excerpt}</textarea></label>
 		<label>Page Theme

@@ -47,6 +47,7 @@ const snapshot: SiteSnapshot = {
 			slug: 'about',
 			excerpt: 'Excerpt',
 			featuredImage: '',
+			showTitle: true,
 			body: 'About body',
 			html: '<p>About body</p>',
 			sourcePath: 'content/pages/about.md'
@@ -57,6 +58,7 @@ const snapshot: SiteSnapshot = {
 			title: 'Journal',
 			slug: 'blog-posts',
 			description: 'Articles',
+			showTitle: true,
 			kind: 'article',
 			routeBase: 'journal',
 			layout: 'cards',
@@ -75,6 +77,7 @@ const snapshot: SiteSnapshot = {
 			slug: 'contact',
 			excerpt: 'Excerpt',
 			featuredImage: '',
+			showTitle: true,
 			body: 'Updated contact body',
 			html: '<p>Updated contact body</p>',
 			kind: 'article',
@@ -109,12 +112,13 @@ describe('github helpers', () => {
 	});
 
 	it('publishes only changed files in a single commit', async () => {
-		const aboutContent = `---\ntitle: About\nslug: about\nexcerpt: Excerpt\n---\n\nAbout body\n`;
-		const contactContent = `---\ntitle: Contact\nslug: contact\nexcerpt: Excerpt\nkind: article\ncollectionSlug: blog-posts\n---\n\nOld contact body\n`;
+		const aboutContent = `---\ntitle: About\nslug: about\nexcerpt: Excerpt\nshowTitle: true\n---\n\nAbout body\n`;
+		const contactContent = `---\ntitle: Contact\nslug: contact\nexcerpt: Excerpt\nshowTitle: true\nkind: article\ncollectionSlug: blog-posts\n---\n\nOld contact body\n`;
 		const collectionContent = `{
   "title": "Journal",
   "slug": "blog-posts",
   "description": "Articles",
+  "showTitle": true,
   "kind": "article",
   "routeBase": "journal",
   "layout": "cards",
@@ -238,11 +242,12 @@ describe('github helpers', () => {
 	});
 
 	it('publishes file deletions in the same commit flow', async () => {
-		const aboutContent = `---\ntitle: About\nslug: about\nexcerpt: Excerpt\n---\n\nAbout body\n`;
+		const aboutContent = `---\ntitle: About\nslug: about\nexcerpt: Excerpt\nshowTitle: true\n---\n\nAbout body\n`;
 		const collectionContent = `{
   "title": "Journal",
   "slug": "blog-posts",
   "description": "Articles",
+  "showTitle": true,
   "kind": "article",
   "routeBase": "journal",
   "layout": "cards",

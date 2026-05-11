@@ -22,7 +22,12 @@
 		{#if homePage?.slug === 'contact'}
 			<ContactPanel {...data.snapshot.site.contact} />
 		{:else if homePage}
-			<RichTextPage title={homePage.title} excerpt={homePage.excerpt} html={homePage.html} />
+			<RichTextPage
+				title={homePage.title}
+				excerpt={homePage.excerpt}
+				html={homePage.html}
+				showTitle={homePage.showTitle}
+			/>
 		{/if}
 	{/snippet}
 </SiteShell>

@@ -171,7 +171,14 @@ export function serializeSnapshot(snapshot: SiteSnapshot) {
 		site: JSON.stringify(stripMeta(snapshot.site), null, 2) + '\n',
 		pages: snapshot.pages.map((page) => ({
 			path: page.sourcePath,
-			content: serializeMarkdown(page, ['title', 'slug', 'excerpt', 'featuredImage', 'theme'])
+			content: serializeMarkdown(page, [
+				'title',
+				'slug',
+				'excerpt',
+				'featuredImage',
+				'showTitle',
+				'theme'
+			])
 		})),
 		collections: snapshot.collections.map((collection) => ({
 			path: collection.sourcePath,
@@ -184,12 +191,13 @@ export function serializeSnapshot(snapshot: SiteSnapshot) {
 					? JSON.stringify(stripMeta(entry), null, 2) + '\n'
 					: serializeMarkdown(
 							entry,
-							entry.kind === 'event'
+						entry.kind === 'event'
 								? [
 										'title',
 										'slug',
 										'excerpt',
 										'featuredImage',
+										'showTitle',
 										'theme',
 										'kind',
 										'collectionSlug',
@@ -197,7 +205,17 @@ export function serializeSnapshot(snapshot: SiteSnapshot) {
 										'location',
 										'tags'
 									]
-								: ['title', 'slug', 'excerpt', 'featuredImage', 'theme', 'kind', 'collectionSlug', 'tags']
+								: [
+										'title',
+										'slug',
+										'excerpt',
+										'featuredImage',
+										'showTitle',
+										'theme',
+										'kind',
+										'collectionSlug',
+										'tags'
+									]
 						)
 		}))
 	};

@@ -55,6 +55,7 @@ const snapshot: SiteSnapshot = {
 			slug: 'about',
 			excerpt: 'About excerpt',
 			featuredImage: '',
+			showTitle: true,
 			body: 'About body',
 			html: '<p>About body</p>',
 			sourcePath: 'content/pages/about.md'
@@ -65,6 +66,7 @@ const snapshot: SiteSnapshot = {
 			title: 'Journal',
 			slug: 'blog-posts',
 			description: 'Desc',
+			showTitle: true,
 			kind: 'article',
 			routeBase: 'journal',
 			layout: 'cards',
@@ -83,6 +85,7 @@ const snapshot: SiteSnapshot = {
 			slug: 'spring-launch',
 			excerpt: 'Entry excerpt',
 			featuredImage: '',
+			showTitle: true,
 			theme: undefined,
 			body: 'Body',
 			html: '<p>Body</p>',

@@ -77,12 +77,15 @@ const markdownContentSchema = z.object({
 	sourcePath: z.string()
 });
 
-export const pageSchema = markdownContentSchema;
+export const pageSchema = markdownContentSchema.extend({
+	showTitle: z.boolean().default(true)
+});
 
 export const collectionSchema = z.object({
 	title: z.string(),
 	slug: z.string(),
 	description: z.string(),
+	showTitle: z.boolean().default(true),
 	theme: themeValueSchema,
 	kind: entryKindSchema,
 	routeBase: z.string(),
@@ -98,7 +101,8 @@ export const collectionSchema = z.object({
 
 const baseEntrySchema = markdownContentSchema.extend({
 	kind: entryKindSchema,
-	collectionSlug: z.string()
+	collectionSlug: z.string(),
+	showTitle: z.boolean().default(true)
 });
 
 export const articleEntrySchema = baseEntrySchema.extend({
@@ -123,6 +127,7 @@ export const galleryEntrySchema = z.object({
 	html: z.string(),
 	kind: z.literal('gallery'),
 	collectionSlug: z.string(),
+	showTitle: z.boolean().default(true),
 	images: z.array(imageSchema),
 	sourcePath: z.string()
 });
@@ -165,6 +170,7 @@ export const emptyDrafts = {
 		slug: 'new-page',
 		excerpt: 'Short summary',
 		featuredImage: '',
+		showTitle: true,
 		theme: undefined,
 		body: 'Start writing here.',
 		html: '',
@@ -174,6 +180,7 @@ export const emptyDrafts = {
 		title: 'New Collection',
 		slug: 'new-collection',
 		description: 'Collection description',
+		showTitle: true,
 		theme: undefined,
 		kind: 'article',
 		routeBase: 'journal',
@@ -197,7 +204,8 @@ export function createEmptyEntryDraft(collection: SiteCollection): SiteEntry {
 		theme: undefined,
 		body: 'Start writing here.',
 		html: '',
-		collectionSlug: collection.slug
+		collectionSlug: collection.slug,
+		showTitle: true
 	};
 
 	switch (collection.kind) {

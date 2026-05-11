@@ -3,15 +3,18 @@
 		title: string;
 		excerpt: string;
 		html: string;
+		showTitle?: boolean;
 	};
 
-	let { title, excerpt, html }: Props = $props();
+	let { title, excerpt, html, showTitle = true }: Props = $props();
 </script>
 
 <article class="article">
 	<header>
 		<p>{excerpt}</p>
-		<h1>{title}</h1>
+		{#if showTitle}
+			<h1>{title}</h1>
+		{/if}
 	</header>
 	<div class="prose">{@html html}</div>
 </article>

@@ -3,6 +3,7 @@ title: Open Day Invitations
 slug: artist-open-day
 excerpt: A second article entry to populate listing views and homepage cards.
 featuredImage: /uploads/contact-desk.svg
+showTitle: true
 kind: article
 collectionSlug: blog-posts
 tags: ["studio","open-day"]

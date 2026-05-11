@@ -19,7 +19,11 @@
 		onAddNavigationItem: () => void;
 		onMoveNavigationItem: (index: number, direction: -1 | 1) => void;
 		onRemoveNavigationItem: (index: number) => void;
-		onUpdatePageField: (page: SitePage, field: keyof SitePage, value: string | undefined) => void;
+		onUpdatePageField: <K extends keyof SitePage>(
+			page: SitePage,
+			field: K,
+			value: SitePage[K]
+		) => void;
 		onUpdateContactField: (
 			field: keyof SiteSnapshot['site']['contact'],
 			value: string

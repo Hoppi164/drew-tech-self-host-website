@@ -1,4 +1,5 @@
 <script lang="ts">
+	import AdminInputToggleField from '$lib/components/admin/AdminInputToggleField.svelte';
 	import { onDestroy, untrack } from 'svelte';
 	import type { SiteCollection } from '$lib/types/content';
 	import type { EntryKind } from '$lib/types/content';
@@ -59,7 +60,14 @@
 <div class="panel">
 	<div class="panel-scroll">
 		<h3>Collection Editor</h3>
-		<label>Title <input value={collection.title} oninput={(event) => onUpdateField('title', (event.currentTarget as HTMLInputElement).value)} /></label>
+		<AdminInputToggleField
+			checked={collection.showTitle}
+			label="Title"
+			toggleLabel="Show collection title"
+			value={collection.title}
+			onInput={(value) => onUpdateField('title', value)}
+			onToggle={(checked) => onUpdateField('showTitle', checked)}
+		/>
 		<label>Slug <input onblur={flushSlugCommit} oninput={handleSlugInput} value={slugDraft} /></label>
 		<label>Route Base <input value={collection.routeBase} oninput={(event) => onUpdateRouteBase((event.currentTarget as HTMLInputElement).value)} /></label>
 		<label>Description <textarea oninput={(event) => onUpdateField('description', (event.currentTarget as HTMLTextAreaElement).value)}>{collection.description}</textarea></label>
